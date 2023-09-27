@@ -1419,4 +1419,10 @@ class EmergencyServices(models.Model):
 
     class Meta:
         verbose_name_plural = 'Emergency Services'
-# maintanance utilities 
+# maintanance utilities  this is last updated need to clear up the codes
+
+
+
+
+
+
