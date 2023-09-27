@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
-
+#starting the model
 #Institution Information
 class InstitutionInformation(models.Model):
     name = models.CharField(max_length=40)
@@ -836,96 +836,7 @@ class LocalBuddyOrganization(models.Model):
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
-    after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
-    email = models.EmailField(verbose_name='Email', blank=True)
-
-    def __str__(self):
-        return self.name
-
-class RegionalBuddyOrganization(models.Model):
-    name = models.CharField(max_length=150, verbose_name='Name')
-    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
-    phone = models.CharField(max_length=15, verbose_name='Phone')
-    cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
-    after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
-    email = models.EmailField(verbose_name='Email', blank=True)
-
-    def __str__(self):
-        return self.name
-
-# Create a reusable Contact model
-class Contact(models.Model):
-    name = models.CharField(max_length=150)
-    address1 = models.CharField(max_length=150)
-    address2 = models.CharField(max_length=150, blank=True)
-    city = models.CharField(max_length=50)
-    state = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=20)
-    phone = models.CharField(max_length=15)
-    after_hours_phone = models.CharField(max_length=15, blank=True)
-    pager = models.CharField(max_length=15, blank=True)
-
-    class Meta:
-        abstract = True
-
-# Create a model for IT Department
-class ITDepartment(Contact):
-    department_name = models.CharField(max_length=150)
-
-# Create a model for Remote Storage Site
-class RemoteStorageSite(Contact):
-    account_number = models.CharField(max_length=50)
-    backup_procedures = models.TextField()
-
-# Create a model for Internet Service Provider
-class InternetServiceProvider(Contact):
-    account_number = models.CharField(max_length=50)
-    restoration_procedures = models.TextField()
-
-# Create a model for Web Site Host
-class WebSiteHost(Contact):
-    account_number = models.CharField(max_length=50)
-    restoration_procedures = models.TextField()
-
-# Create a model for Online Subscription Service
-class OnlineSubscriptionService(Contact):
-    account_number = models.CharField(max_length=50)
-    restoration_procedures = models.TextField()
-
-# Create a model for Regional Online Catalog/Network
-class RegionalNetwork(Contact):
-    regional_network_name = models.CharField(max_length=150)
-    account_number = models.CharField(max_length=50)
-    network_procedures = models.TextField()
-from django.db import models
-
-# Create a model for Software
-class Software(models.Model):
-    name = models.CharField(max_length=150, verbose_name='Name of software package')
-    supplier_and_version = models.CharField(max_length=150, verbose_name='Supplier and version')
-    computers_installed_on = models.TextField(verbose_name='Computer(s) on which software is installed')
-    registration_number = models.CharField(max_length=50, verbose_name='Registration number', blank=True)
-    help_line_telephone_number = models.CharField(max_length=15, verbose_name='Help-line telephone number', blank=True)
-    location_of_backup_copy = models.CharField(max_length=150, verbose_name='Location of backup copy', blank=True)
-    insurance_coverage = models.CharField(max_length=150, verbose_name='Insurance Coverage', blank=True)
-
-    def __str__(self):
-        return self.name
-
-# Create a model for Computer Hardware
-class ComputerHardware(models.Model):
-    make_and_model = models.CharField(max_length=150, verbose_name='Make and model')
-    serial_number = models.CharField(max_length=50, verbose_name='Serial number', blank=True)
-    location_of_equipment = models.CharField(max_length=150, verbose_name='Location of equipment', blank=True)
-    vendor = models.CharField(max_length=150, verbose_name='Vendor')
-    vendor_help_line_number = models.CharField(max_length=15, verbose_name='Vendor help line number', blank=True)
-    drives_and_configuration = models.TextField(verbose_name='Drives and configuration', blank=True)
-    insurance_coverage = models.CharField(max_length=150, verbose_name='Insurance Coverage', blank=True)
-
-    def __str__(self):
-        return self.make_and_model
-
-# Create a model for Data Backup
+    after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True) a model for Data Backup
 class DataBackup(models.Model):
     DATA_TYPE_CHOICES = (
         ('Collection Records', 'Collection Records'),
@@ -944,7 +855,7 @@ class DataBackup(models.Model):
     def __str__(self):
         return f'{self.type_of_data} - {self.location_of_data}'
 
-# Create a model for Data Restoration
+#a model for Data Restoration
 class DataRestoration(models.Model):
     staff_person_knows_how_to_restore = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='data_restoration_staff', verbose_name='Staff Person')
     outside_person_or_organization_assist_restore = models.CharField(max_length=150, verbose_name='Name/Organization', blank=True)
@@ -1017,7 +928,7 @@ EmergencyRemoteAccess.objects.create(
     other='Any other procedures or services related to emergency remote access.'
 )
 
-# Create a model to represent the priority of administrative records
+# a model to represent the priority of administrative records
 class AdministrativeRecord(models.Model):
     PRIORITY_CHOICES = (
         (1, '1'),
@@ -1034,7 +945,7 @@ class AdministrativeRecord(models.Model):
     def __str__(self):
         return f'Priority {self.priority_ranking} - {self.record_type}'
 
-# Create a model to represent the priority of bibliographic records
+#a model to represent the priority of bibliographic records
 class BibliographicRecord(models.Model):
     PRIORITY_CHOICES = (
         (1, '1'),
@@ -1051,7 +962,7 @@ class BibliographicRecord(models.Model):
     def __str__(self):
         return f'Priority {self.priority_ranking} - {self.record_type}'
 
-# Create a model to represent departments and their priorities
+# This model is to represent departments and their priorities
 class Department(models.Model):
     name = models.CharField(max_length=150, verbose_name='Department Name')
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
@@ -1059,7 +970,7 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-# Create a model to represent collections and their priorities within departments
+#  a model to represent collections and their priorities within departments
 class Collection(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='collections')
     name = models.CharField(max_length=150, verbose_name='Collection Name')
@@ -1137,7 +1048,7 @@ class InsuranceCarrier(models.Model):
 
     def __str__(self):
         return self.name
-
+# two same models not sure how to combine into one model?
 class InsuranceAgent(models.Model):
     name = models.CharField(max_length=150, verbose_name='Company/Organization')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
@@ -1202,18 +1113,7 @@ class ExtraExpensesInsurance(models.Model):
     coverage_amount = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Extra Expenses Insurance Provided')
     deductible = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
     
-    # Insurance carrier information
-    carrier_company = models.CharField(max_length=150, verbose_name='Company/Organization')
-    carrier_contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
-    carrier_address1 = models.CharField(max_length=150, verbose_name='Address1')
-    carrier_address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
-    carrier_city = models.CharField(max_length=50, verbose_name='City')
-    carrier_state = models.CharField(max_length=2, verbose_name='State')
-    carrier_zip = models.CharField(max_length=50, verbose_name='Zip')
-    carrier_phone = models.CharField(max_length=15, verbose_name='Phone')
-    carrier_cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
-    carrier_after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
-    carrier_pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
+    
     
     # Insurance agent or broker information
     agent_company = models.CharField(max_length=150, verbose_name='Company/Organization')
@@ -1273,7 +1173,7 @@ class EvacuationProcedure(models.Model):
         return f'Evacuation Area: {self.area_or_floor}'
 
 class StaffVisitorLog(models.Model):
-    area_or_floor = models.CharField(max_length=150, verbose_name='Area/Floor')
+    area_or_floor = models.CharField(max_length=300, verbose_name='Area/Floor')
     person_responsible = models.CharField(max_length=150, verbose_name='Person Responsible for List')
     backup_1 = models.CharField(max_length=150, verbose_name='Backup #1')
     backup_2 = models.CharField(max_length=150, verbose_name='Backup #2')
@@ -1333,7 +1233,7 @@ class DryingSpace(models.Model):
     )
 
     location_type = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name='Location Type')
-    location = models.CharField(max_length=300, verbose_name='Location')
+    location = models.CharField(max_length=150, verbose_name='Location')
     space_available = models.CharField(max_length=150, verbose_name='Space Available')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
