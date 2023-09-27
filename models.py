@@ -7,11 +7,11 @@ from django.contrib.auth.models import User
 #Institution Information
 class InstitutionInformation(models.Model):
     name = models.CharField(max_length=40)
-    location_name = models.CharField(max_length=100)
-    address.models.models.CharField(_("address"), max_length=100)
+    location_name = models.CharField(max_length=150)
+    address.models.models.CharField(_("address"), max_length=150)
     city = models.CharField(_("city"), max_length=150, default="Providence")
     state = USStateField(_("state"), default="RI")
-    zip_code = models.CharField(_("zip code"), max_length=10, default="43760")
+    zip_code = models.CharField(_("zip code"), max_length=50, default="43760")
 class ContactPerson(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -30,20 +30,20 @@ class HomeAddress(models.Model):
     address_2 = models.CharField(_("address"), max_length=255, blank=True)
     city = models.CharField(_("city"), max_length=150, default="Providence")
     state = USStateField(_("state"), default="RI")
-    zip_code = models.CharField(_("zip code"), max_length=10, default="43760")
+    zip_code = models.CharField(_("zip code"), max_length=50, default="43760")
     
 class StaffAndKeyPersonnel(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    title = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    title = models.CharField(max_length=150)
     work_phone = models.CharField(max_length=20)
     work_email = models.EmailField()
     
     home_address_line_1 = models.CharField(max_length=255)
     home_address_line_2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=10)
+    city = models.CharField(max_length=150)
+    state = models.CharField(max_length=150)
+    zip_code = models.CharField(max_length=50)
     
     home_phone = models.CharField(max_length=20, blank=True, null=True)
     cell_phone = models.CharField(max_length=20, blank=True, null=True)
@@ -55,7 +55,7 @@ def __str__(self):
 from django.db import models
 
 class Reporter(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=150)
     email = models.EmailField()
 
     def __str__(self):
@@ -87,7 +87,7 @@ class DisasterPlanResponsibility(models.Model):
         ('Information Technology', 'Information Technology'),
     ]
 
-    responsibility = models.CharField(max_length=200, choices=RESPONSIBILITY_CHOICES)
+    responsibility = models.CharField(max_length=300, choices=RESPONSIBILITY_CHOICES)
     description = models.TextField()
     responsible_team_member = models.ForeignKey(Reporter, on_delete=models.CASCADE)
 
@@ -333,7 +333,7 @@ class ClosingStaffSchedule(models.Model):
 
     primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_closing_staff')
     backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_closing_staff')
-    day_of_week = models.CharField(max_length=10, choices=DAYS_OF_WEEK, unique=True)
+    day_of_week = models.CharField(max_length=50, choices=DAYS_OF_WEEK, unique=True)
 
     def __str__(self):
         return f'Closing Staff Schedule for {self.get_day_of_week_display()}'
@@ -361,12 +361,12 @@ class OpeningProceduresChecklist(models.Model):
     sinks_toilets_working = models.BooleanField(default=False, verbose_name='Sinks and toilets in working order')
     hvac_operating_properly = models.BooleanField(default=False, verbose_name='HVAC is operating properly')
     pumps_operating_properly = models.BooleanField(default=False, verbose_name='Pumps are operating properly')
-    other_equipment = models.CharField(max_length=100, blank=True, verbose_name='Other equipment operating properly')
+    other_equipment = models.CharField(max_length=150, blank=True, verbose_name='Other equipment operating properly')
     known_problem_areas_checked = models.TextField(blank=True, verbose_name='Known problem areas checked')
     other_notes = models.TextField(blank=True, verbose_name='Other Notes')
 
     # Responsible staff
-    responsible_staff = models.CharField(max_length=10, choices=RESPONSIBLE_CHOICES, default='Primary')
+    responsible_staff = models.CharField(max_length=50, choices=RESPONSIBLE_CHOICES, default='Primary')
 
     def __str__(self):
         return 'Opening Procedures Checklist'
@@ -387,7 +387,7 @@ class OpeningStaffSchedule(models.Model):
 
     primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_opening_staff', null=True, blank=True)
     backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_opening_staff', null=True, blank=True)
-    day_of_week = models.CharField(max_length=10, choices=DAYS_OF_WEEK, unique=True)
+    day_of_week = models.CharField(max_length=50, choices=DAYS_OF_WEEK, unique=True)
 
     def __str__(self):
         return f'Opening Staff Schedule for {self.get_day_of_week_display()}'
@@ -396,17 +396,17 @@ class OpeningStaffSchedule(models.Model):
         verbose_name_plural = 'Opening Staff Schedule'
 
 class FacilitiesInformation(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Name of Responsible Person/Department/Company')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address Line 1')
-    address2 = models.CharField(max_length=100, blank=True, verbose_name='Address Line 2')
+    name = models.CharField(max_length=150, verbose_name='Name of Responsible Person/Department/Company')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
+    address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='ZIP Code')
+    zip_code = models.CharField(max_length=50, verbose_name='ZIP Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=15, verbose_name='Pager')
-    email = models.EmailField(max_length=100, verbose_name='Email')
+    email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
         return 'Facilities Information'
@@ -416,7 +416,7 @@ class FacilitiesInformation(models.Model):
 
 class EmergencyShutOff(models.Model):
     facility_info = models.ForeignKey(FacilitiesInformation, on_delete=models.CASCADE, verbose_name='Facilities Information')
-    shut_off_type = models.CharField(max_length=100, verbose_name='Emergency Shut-Off Type')
+    shut_off_type = models.CharField(max_length=150, verbose_name='Emergency Shut-Off Type')
     location = models.TextField(verbose_name='Location Description')
     procedures = models.TextField(verbose_name='Procedures')
 
@@ -428,7 +428,7 @@ class EmergencyShutOff(models.Model):
 
 class FireDetectionAndSuppression(models.Model):
     # Fire Alarm Pull Box
-    fire_alarm_pull_box = models.CharField(max_length=100, verbose_name='Fire Alarm Pull Box Number/Name')
+    fire_alarm_pull_box = models.CharField(max_length=150, verbose_name='Fire Alarm Pull Box Number/Name')
     fire_alarm_pull_box_location = models.TextField(verbose_name='Location Description')
 
     # Fire Extinguishers
@@ -438,12 +438,12 @@ class FireDetectionAndSuppression(models.Model):
         ('CO2', 'CO2'),
         ('Mist', 'Mist'),
     ]
-    fire_extinguisher_type = models.CharField(max_length=10, choices=FIRE_EXTINGUISHER_TYPES, verbose_name='Type of Fire Extinguisher')
+    fire_extinguisher_type = models.CharField(max_length=50, choices=FIRE_EXTINGUISHER_TYPES, verbose_name='Type of Fire Extinguisher')
     fire_extinguisher_location = models.TextField(verbose_name='Location Description')
     last_inspection_date = models.DateField(verbose_name='Date of Last Inspection')
 
     # Smoke and Heat Detectors
-    smoke_heat_detector_type = models.CharField(max_length=100, verbose_name='Type of Detector')
+    smoke_heat_detector_type = models.CharField(max_length=150, verbose_name='Type of Detector')
     smoke_heat_detector_location = models.TextField(verbose_name='Location Description')
 
     # Monitoring and Service
@@ -458,17 +458,17 @@ class FireDetectionAndSuppression(models.Model):
         verbose_name_plural = 'Fire Detection and Suppression'
 
 class SmokeHeatDetectionMonitoringAgency(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address Line 1')
-    address2 = models.CharField(max_length=100, blank=True, verbose_name='Address Line 2')
+    name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
+    address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='ZIP Code')
+    zip_code = models.CharField(max_length=50, verbose_name='ZIP Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=15, verbose_name='Pager')
-    email = models.EmailField(max_length=100, verbose_name='Email')
+    email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
         return 'Smoke and Heat Detection System Monitoring Agency'
@@ -477,17 +477,17 @@ class SmokeHeatDetectionMonitoringAgency(models.Model):
         verbose_name_plural = 'Smoke and Heat Detection System Monitoring Agencies'
 
 class SmokeHeatDetectionServiceCompany(models.Model):
-         name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address Line 1')
-    address2 = models.CharField(max_length=100, blank=True, verbose_name='Address Line 2')
+         name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
+    address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='ZIP Code')
+    zip_code = models.CharField(max_length=50, verbose_name='ZIP Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=15, verbose_name='Pager')
-    email = models.EmailField(max_length=100, verbose_name='Email')
+    email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
         return 'Smoke and Heat Detection System Service Company'
@@ -496,7 +496,7 @@ class SmokeHeatDetectionServiceCompany(models.Model):
         verbose_name_plural = 'Smoke and Heat Detection System Service Companies'
 
 class SprinklerSystem(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location')
+    location = models.CharField(max_length=150, verbose_name='Location')
     description = models.TextField(verbose_name='Description/Type of Sprinkler System')
     last_inspection_date = models.DateField(verbose_name='Date of Last Inspection')
     last_flush_date = models.DateField(verbose_name='Date System Was Last Flushed')
@@ -509,17 +509,17 @@ class SprinklerSystem(models.Model):
         verbose_name_plural = 'Sprinkler Systems'
 
 class SprinklerSystemMonitoringAgency(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address Line 1')
-    address2 = models.CharField(max_length=100, blank=True, verbose_name='Address Line 2')
+    name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
+    address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='ZIP Code')
+    zip_code = models.CharField(max_length=50, verbose_name='ZIP Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=15, verbose_name='Pager')
-    email = models.EmailField(max_length=100, verbose_name='Email')
+    email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
         return 'Sprinkler System Monitoring Agency'
@@ -527,17 +527,17 @@ class SprinklerSystemMonitoringAgency(models.Model):
     class Meta:
         verbose_name_plural = 'Sprinkler System Monitoring Agencies'
 class SprinklerSystemServiceCompany(models.Model):
-         name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address Line 1')
-    address2 = models.CharField(max_length=100, blank=True, verbose_name='Address Line 2')
+         name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
+    address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='ZIP Code')
+    zip_code = models.CharField(max_length=50, verbose_name='ZIP Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=15, verbose_name='Pager')
-    email = models.EmailField(max_length=100, verbose_name='Email')
+    email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
         return 'Sprinkler System Service Company'
@@ -546,8 +546,8 @@ class SprinklerSystemServiceCompany(models.Model):
         verbose_name_plural = 'Sprinkler System Service Companies'
 
 class GaseousFireSuppressionSystem(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location')
-    suppression_system_type = models.CharField(max_length=100, verbose_name='Description/Type of Suppression System')
+    location = models.CharField(max_length=150, verbose_name='Location')
+    suppression_system_type = models.CharField(max_length=150, verbose_name='Description/Type of Suppression System')
     age_of_system = models.PositiveIntegerField(verbose_name='Age of System', null=True, blank=True)
     last_inspection_date = models.DateField(verbose_name='Date of Last Inspection', null=True, blank=True)
     evacuation_plan_description = models.TextField(verbose_name='Description of Emergency Evacuation Plans', blank=True)
@@ -559,8 +559,8 @@ class GaseousFireSuppressionSystem(models.Model):
         verbose_name_plural = 'Gaseous Fire Suppression Systems'
 
 class GaseousFireSuppressionSystem(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location')
-    suppression_system_type = models.CharField(max_length=100, verbose_name='Description/Type of Suppression System')
+    location = models.CharField(max_length=150, verbose_name='Location')
+    suppression_system_type = models.CharField(max_length=150, verbose_name='Description/Type of Suppression System')
     age_of_system = models.PositiveIntegerField(verbose_name='Age of System', null=True, blank=True)
     last_inspection_date = models.DateField(verbose_name='Date of Last Inspection', null=True, blank=True)
     evacuation_plan_description = models.TextField(verbose_name='Description of Emergency Evacuation Plans', blank=True)
@@ -569,30 +569,30 @@ class GaseousFireSuppressionSystem(models.Model):
     monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
     
     # Monitoring Agency
-    monitoring_agency_name = models.CharField(max_length=100, verbose_name='Monitoring Agency Name', blank=True)
-    monitoring_contact_person = models.CharField(max_length=100, verbose_name='Contact Person', blank=True)
-    monitoring_address1 = models.CharField(max_length=100, verbose_name='Address 1', blank=True)
-    monitoring_address2 = models.CharField(max_length=100, verbose_name='Address 2', blank=True)
+    monitoring_agency_name = models.CharField(max_length=150, verbose_name='Monitoring Agency Name', blank=True)
+    monitoring_contact_person = models.CharField(max_length=150, verbose_name='Contact Person', blank=True)
+    monitoring_address1 = models.CharField(max_length=150, verbose_name='Address 1', blank=True)
+    monitoring_address2 = models.CharField(max_length=150, verbose_name='Address 2', blank=True)
     monitoring_city = models.CharField(max_length=50, verbose_name='City', blank=True)
     monitoring_state = models.CharField(max_length=2, verbose_name='State', blank=True)
-    monitoring_zip = models.CharField(max_length=10, verbose_name='Zip', blank=True)
+    monitoring_zip = models.CharField(max_length=50, verbose_name='Zip', blank=True)
     monitoring_phone = models.CharField(max_length=20, verbose_name='Phone', blank=True)
     monitoring_after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone', blank=True)
     monitoring_pager = models.CharField(max_length=20, verbose_name='Pager', blank=True)
-    monitoring_email = models.EmailField(max_length=100, verbose_name='Email', blank=True)
+    monitoring_email = models.EmailField(max_length=150, verbose_name='Email', blank=True)
     
     # Service Company
-    service_company_name = models.CharField(max_length=100, verbose_name='Service Company Name', blank=True)
-    service_contact_person = models.CharField(max_length=100, verbose_name='Contact Person', blank=True)
-    service_address1 = models.CharField(max_length=100, verbose_name='Address 1', blank=True)
-    service_address2 = models.CharField(max_length=100, verbose_name='Address 2', blank=True)
+    service_company_name = models.CharField(max_length=150, verbose_name='Service Company Name', blank=True)
+    service_contact_person = models.CharField(max_length=150, verbose_name='Contact Person', blank=True)
+    service_address1 = models.CharField(max_length=150, verbose_name='Address 1', blank=True)
+    service_address2 = models.CharField(max_length=150, verbose_name='Address 2', blank=True)
     service_city = models.CharField(max_length=50, verbose_name='City', blank=True)
     service_state = models.CharField(max_length=2, verbose_name='State', blank=True)
-    service_zip = models.CharField(max_length=10, verbose_name='Zip', blank=True)
+    service_zip = models.CharField(max_length=50, verbose_name='Zip', blank=True)
     service_phone = models.CharField(max_length=20, verbose_name='Phone', blank=True)
     service_after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone', blank=True)
     service_pager = models.CharField(max_length=20, verbose_name='Pager', blank=True)
-    service_email = models.EmailField(max_length=100, verbose_name='Email', blank=True)
+    service_email = models.EmailField(max_length=150, verbose_name='Email', blank=True)
 
     def __str__(self):
         return f'Gaseous Fire Suppression System at {self.location}'
@@ -601,8 +601,8 @@ class GaseousFireSuppressionSystem(models.Model):
         verbose_name_plural = 'Gaseous Fire Suppression Systems'
 
 class WaterDetector(models.Model):
-    detector_type = models.CharField(max_length=100, verbose_name='Type of Water Detector')
-    location = models.CharField(max_length=100, verbose_name='Location')
+    detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
+    location = models.CharField(max_length=150, verbose_name='Location')
     
     # Monitoring and Service Information
     monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
@@ -614,8 +614,8 @@ class WaterDetector(models.Model):
         verbose_name_plural = 'Water Detectors'
 
 class WaterDetector(models.Model):
-    detector_type = models.CharField(max_length=100, verbose_name='Type of Water Detector')
-    location = models.CharField(max_length=100, verbose_name='Location')
+    detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
+    location = models.CharField(max_length=150, verbose_name='Location')
 
     # Monitoring and Service Information
     monitoring_procedures = models.TextField(
@@ -628,13 +628,13 @@ class WaterDetector(models.Model):
 
 class WaterDetectorMonitoringAgency(models.Model):
     water_detector = models.ForeignKey(WaterDetector, on_delete=models.CASCADE, related_name='monitoring_agencies')
-    name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City')
-    state = models.CharField(max_length=100, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip Code')
+    name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City')
+    state = models.CharField(max_length=150, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
@@ -644,8 +644,8 @@ class WaterDetectorMonitoringAgency(models.Model):
         return f'Monitoring Agency for Water Detector at {self.water_detector.location}'
 
 class SecuritySystem(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location')
-    security_type = models.CharField(max_length=100, verbose_name='Type of Security')
+    location = models.CharField(max_length=150, verbose_name='Location')
+    security_type = models.CharField(max_length=150, verbose_name='Type of Security')
 
     # Monitoring and Service Information
     last_inspection_date = models.DateField(
@@ -653,7 +653,7 @@ class SecuritySystem(models.Model):
         null=True, blank=True
     )
     access_code_location = models.CharField(
-        max_length=100,
+        max_length=150,
         verbose_name='Location of Access Codes for Automated Security System',
         blank=True
     )
@@ -667,13 +667,13 @@ class SecuritySystem(models.Model):
 
 class SecuritySystemMonitoringAgency(models.Model):
     security_system = models.ForeignKey(SecuritySystem, on_delete=models.CASCADE, related_name='monitoring_agencies')
-    organization = models.CharField(max_length=100, verbose_name='Organization/Department')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City')
-    state = models.CharField(max_length=100, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip Code')
+    organization = models.CharField(max_length=150, verbose_name='Organization/Department')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City')
+    state = models.CharField(max_length=150, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
@@ -684,13 +684,13 @@ class SecuritySystemMonitoringAgency(models.Model):
 
 class SecuritySystemServiceCompany(models.Model):
     security_system = models.ForeignKey(SecuritySystem, on_delete=models.CASCADE, related_name='service_companies')
-    name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City')
-    state = models.CharField(max_length=100, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip Code')
+    name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City')
+    state = models.CharField(max_length=150, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
@@ -700,14 +700,14 @@ class SecuritySystemServiceCompany(models.Model):
         return f'Service Company for Security System at {self.security_system.location}
 
 class StaffMember(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Staff Member Name')
-    access_type = models.CharField(max_length=100, verbose_name='Type of Access')
+    name = models.CharField(max_length=150, verbose_name='Staff Member Name')
+    access_type = models.CharField(max_length=150, verbose_name='Type of Access')
     areas_accessed = models.TextField(
         verbose_name='Areas to Which Person Has Access',
         help_text='List the areas or rooms this staff member has access to.'
     )
     access_code_location = models.CharField(
-        max_length=100,
+        max_length=150,
         verbose_name='Location of Access Codes for Automated Security System',
         blank=True,
         help_text='Specify where access codes are stored or listed.'
@@ -721,7 +721,7 @@ class StaffMember(models.Model):
         return self.name
 
 class HeatingSystem(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location (e.g., rooms or areas)')
+    location = models.CharField(max_length=150, verbose_name='Location (e.g., rooms or areas)')
     system_description = models.TextField(
         verbose_name='Description of Heating System',
         help_text='Describe the type of heating system, type of fuel, distribution system, and whether it provides humidification.'
@@ -742,13 +742,13 @@ class HeatingSystem(models.Model):
 
 class HeatingSystemServiceCompany(models.Model):
     heating_system = models.ForeignKey(HeatingSystem, on_delete=models.CASCADE, related_name='service_companies')
-    organization = models.CharField(max_length=100, verbose_name='Organization/Department')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City')
-    state = models.CharField(max_length=100, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip Code')
+    organization = models.CharField(max_length=150, verbose_name='Organization/Department')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City')
+    state = models.CharField(max_length=150, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
@@ -758,7 +758,7 @@ class HeatingSystemServiceCompany(models.Model):
         return f'Service Company for Heating System at {self.heating_system.location}'
 
 class CoolingSystem(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location (e.g., rooms or areas)')
+    location = models.CharField(max_length=150, verbose_name='Location (e.g., rooms or areas)')
     system_description = models.TextField(
         verbose_name='Description of Cooling System',
         help_text='Describe the type of cooling system, such as central air conditioning, window units, or heat pumps.'
@@ -779,13 +779,13 @@ class CoolingSystem(models.Model):
 
 class CoolingSystemServiceCompany(models.Model):
     cooling_system = models.ForeignKey(CoolingSystem, on_delete=models.CASCADE, related_name='service_companies')
-    organization = models.CharField(max_length=100, verbose_name='Organization/Department')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City')
-    state = models.CharField(max_length=100, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip Code')
+    organization = models.CharField(max_length=150, verbose_name='Organization/Department')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City')
+    state = models.CharField(max_length=150, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
@@ -801,7 +801,7 @@ class DisasterResponseTeamMember(models.Model):
         ('Backup #2', 'Backup #2'),
     )
 
-    name = models.CharField(max_length=100, verbose_name='Name')
+    name = models.CharField(max_length=150, verbose_name='Name')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name='Role')
     contact_phone = models.CharField(max_length=15, verbose_name='Phone')
     contact_cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
@@ -832,8 +832,8 @@ class DisasterTeamResponsibility(models.Model):
         return f'{self.get_responsibility_display()} - {self.team_member.name}'
 
 class LocalBuddyOrganization(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
+    name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
@@ -843,8 +843,8 @@ class LocalBuddyOrganization(models.Model):
         return self.name
 
 class RegionalBuddyOrganization(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Name')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
+    name = models.CharField(max_length=150, verbose_name='Name')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
@@ -855,9 +855,9 @@ class RegionalBuddyOrganization(models.Model):
 
 # Create a reusable Contact model
 class Contact(models.Model):
-    name = models.CharField(max_length=100)
-    address1 = models.CharField(max_length=100)
-    address2 = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=150)
+    address1 = models.CharField(max_length=150)
+    address2 = models.CharField(max_length=150, blank=True)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=20)
@@ -870,7 +870,7 @@ class Contact(models.Model):
 
 # Create a model for IT Department
 class ITDepartment(Contact):
-    department_name = models.CharField(max_length=100)
+    department_name = models.CharField(max_length=150)
 
 # Create a model for Remote Storage Site
 class RemoteStorageSite(Contact):
@@ -894,33 +894,33 @@ class OnlineSubscriptionService(Contact):
 
 # Create a model for Regional Online Catalog/Network
 class RegionalNetwork(Contact):
-    regional_network_name = models.CharField(max_length=100)
+    regional_network_name = models.CharField(max_length=150)
     account_number = models.CharField(max_length=50)
     network_procedures = models.TextField()
 from django.db import models
 
 # Create a model for Software
 class Software(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Name of software package')
-    supplier_and_version = models.CharField(max_length=100, verbose_name='Supplier and version')
+    name = models.CharField(max_length=150, verbose_name='Name of software package')
+    supplier_and_version = models.CharField(max_length=150, verbose_name='Supplier and version')
     computers_installed_on = models.TextField(verbose_name='Computer(s) on which software is installed')
     registration_number = models.CharField(max_length=50, verbose_name='Registration number', blank=True)
     help_line_telephone_number = models.CharField(max_length=15, verbose_name='Help-line telephone number', blank=True)
-    location_of_backup_copy = models.CharField(max_length=100, verbose_name='Location of backup copy', blank=True)
-    insurance_coverage = models.CharField(max_length=100, verbose_name='Insurance Coverage', blank=True)
+    location_of_backup_copy = models.CharField(max_length=150, verbose_name='Location of backup copy', blank=True)
+    insurance_coverage = models.CharField(max_length=150, verbose_name='Insurance Coverage', blank=True)
 
     def __str__(self):
         return self.name
 
 # Create a model for Computer Hardware
 class ComputerHardware(models.Model):
-    make_and_model = models.CharField(max_length=100, verbose_name='Make and model')
+    make_and_model = models.CharField(max_length=150, verbose_name='Make and model')
     serial_number = models.CharField(max_length=50, verbose_name='Serial number', blank=True)
-    location_of_equipment = models.CharField(max_length=100, verbose_name='Location of equipment', blank=True)
-    vendor = models.CharField(max_length=100, verbose_name='Vendor')
+    location_of_equipment = models.CharField(max_length=150, verbose_name='Location of equipment', blank=True)
+    vendor = models.CharField(max_length=150, verbose_name='Vendor')
     vendor_help_line_number = models.CharField(max_length=15, verbose_name='Vendor help line number', blank=True)
     drives_and_configuration = models.TextField(verbose_name='Drives and configuration', blank=True)
-    insurance_coverage = models.CharField(max_length=100, verbose_name='Insurance Coverage', blank=True)
+    insurance_coverage = models.CharField(max_length=150, verbose_name='Insurance Coverage', blank=True)
 
     def __str__(self):
         return self.make_and_model
@@ -934,11 +934,11 @@ class DataBackup(models.Model):
         ('Digital Collections', 'Digital Collections'),
     )
 
-    type_of_data = models.CharField(max_length=100, choices=DATA_TYPE_CHOICES, verbose_name='Type of data')
-    location_of_data = models.CharField(max_length=100, verbose_name='Location of Data')
+    type_of_data = models.CharField(max_length=150, choices=DATA_TYPE_CHOICES, verbose_name='Type of data')
+    location_of_data = models.CharField(max_length=150, verbose_name='Location of Data')
     person_responsible_for_backup = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='data_backups')
-    on_site_location_of_backup = models.CharField(max_length=100, verbose_name='On-site location of backup', blank=True)
-    off_site_location_of_backup = models.CharField(max_length=100, verbose_name='Off-site location of backup', blank=True)
+    on_site_location_of_backup = models.CharField(max_length=150, verbose_name='On-site location of backup', blank=True)
+    off_site_location_of_backup = models.CharField(max_length=150, verbose_name='Off-site location of backup', blank=True)
     frequency_of_backup = models.CharField(max_length=50, verbose_name='Frequency of backup', blank=True)
 
     def __str__(self):
@@ -947,17 +947,17 @@ class DataBackup(models.Model):
 # Create a model for Data Restoration
 class DataRestoration(models.Model):
     staff_person_knows_how_to_restore = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='data_restoration_staff', verbose_name='Staff Person')
-    outside_person_or_organization_assist_restore = models.CharField(max_length=100, verbose_name='Name/Organization', blank=True)
-    title_or_contact = models.CharField(max_length=100, verbose_name='Title/Contact', blank=True)
-    address1 = models.CharField(max_length=100, verbose_name='Address1', blank=True)
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City', blank=True)
-    state = models.CharField(max_length=100, verbose_name='State', blank=True)
-    zip_code = models.CharField(max_length=10, verbose_name='Zip', blank=True)
+    outside_person_or_organization_assist_restore = models.CharField(max_length=150, verbose_name='Name/Organization', blank=True)
+    title_or_contact = models.CharField(max_length=150, verbose_name='Title/Contact', blank=True)
+    address1 = models.CharField(max_length=150, verbose_name='Address1', blank=True)
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City', blank=True)
+    state = models.CharField(max_length=150, verbose_name='State', blank=True)
+    zip_code = models.CharField(max_length=50, verbose_name='Zip', blank=True)
     phone = models.CharField(max_length=15, verbose_name='Phone', blank=True)
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
-    email = models.EmailField(max_length=100, verbose_name='Email', blank=True)
+    email = models.EmailField(max_length=150, verbose_name='Email', blank=True)
 
     def __str__(self):
         return f'{self.staff_person_knows_how_to_restore.name} - {self.outside_person_or_organization_assist_restore}'
@@ -965,25 +965,25 @@ class DataRestoration(models.Model):
 # Create a model for Software and Hardware Reconfiguration
 class Reconfiguration(models.Model):
     staff_person_within_institution = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='reconfiguration_staff', verbose_name='Staff Person')
-    outside_person_or_organization_assist_reconfigure = models.CharField(max_length=100, verbose_name='Name/Organization', blank=True)
-    title_or_contact = models.CharField(max_length=100, verbose_name='Title/Contact', blank=True)
-    address1 = models.CharField(max_length=100, verbose_name='Address1', blank=True)
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=100, verbose_name='City', blank=True)
-    state = models.CharField(max_length=100, verbose_name='State', blank=True)
-    zip_code = models.CharField(max_length=10, verbose_name='Zip', blank=True)
+    outside_person_or_organization_assist_reconfigure = models.CharField(max_length=150, verbose_name='Name/Organization', blank=True)
+    title_or_contact = models.CharField(max_length=150, verbose_name='Title/Contact', blank=True)
+    address1 = models.CharField(max_length=150, verbose_name='Address1', blank=True)
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
+    city = models.CharField(max_length=150, verbose_name='City', blank=True)
+    state = models.CharField(max_length=150, verbose_name='State', blank=True)
+    zip_code = models.CharField(max_length=50, verbose_name='Zip', blank=True)
     phone = models.CharField(max_length=15, verbose_name='Phone', blank=True)
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
-    email = models.EmailField(max_length=100, verbose_name='Email', blank=True)
+    email = models.EmailField(max_length=150, verbose_name='Email', blank=True)
 
     def __str__(self):
         return f'{self.staff_person_within_institution.name} - {self.outside_person_or_organization_assist_reconfigure}'
 
 # Create a model for Relocation of Computer Operations
 class ComputerOperationRelocation(models.Model):
-    location = models.CharField(max_length=100, verbose_name='Location')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact person')
+    location = models.CharField(max_length=150, verbose_name='Location')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact person')
     phone = models.CharField(max_length=15, verbose_name='Phone', blank=True)
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
@@ -1028,8 +1028,8 @@ class AdministrativeRecord(models.Model):
     )
 
     priority_ranking = models.PositiveIntegerField(choices=PRIORITY_CHOICES, verbose_name='Priority Ranking')
-    record_type = models.CharField(max_length=100, verbose_name='Type of Record Group')
-    location = models.CharField(max_length=200, verbose_name='Location of Records')
+    record_type = models.CharField(max_length=150, verbose_name='Type of Record Group')
+    location = models.CharField(max_length=300, verbose_name='Location of Records')
 
     def __str__(self):
         return f'Priority {self.priority_ranking} - {self.record_type}'
@@ -1045,15 +1045,15 @@ class BibliographicRecord(models.Model):
     )
 
     priority_ranking = models.PositiveIntegerField(choices=PRIORITY_CHOICES, verbose_name='Priority Ranking')
-    record_type = models.CharField(max_length=100, verbose_name='Type of Record Group')
-    location = models.CharField(max_length=200, verbose_name='Location of Records')
+    record_type = models.CharField(max_length=150, verbose_name='Type of Record Group')
+    location = models.CharField(max_length=300, verbose_name='Location of Records')
 
     def __str__(self):
         return f'Priority {self.priority_ranking} - {self.record_type}'
 
 # Create a model to represent departments and their priorities
 class Department(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Department Name')
+    name = models.CharField(max_length=150, verbose_name='Department Name')
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
 
     def __str__(self):
@@ -1062,14 +1062,14 @@ class Department(models.Model):
 # Create a model to represent collections and their priorities within departments
 class Collection(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='collections')
-    name = models.CharField(max_length=100, verbose_name='Collection Name')
+    name = models.CharField(max_length=150, verbose_name='Collection Name')
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
 
     def __str__(self):
         return self.name
 
 class Department(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Department Name')
+    name = models.CharField(max_length=150, verbose_name='Department Name')
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
 
     def __str__(self):
@@ -1077,23 +1077,23 @@ class Department(models.Model):
 
 class Collection(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='collections')
-    name = models.CharField(max_length=100, verbose_name='Collection Name')
+    name = models.CharField(max_length=150, verbose_name='Collection Name')
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
-    location = models.CharField(max_length=200, verbose_name='Location (include floor and specific location)')
+    location = models.CharField(max_length=300, verbose_name='Location (include floor and specific location)')
 
     def __str__(self):
         return self.name
 
 class OverallSalvagePriority(models.Model):
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
-    material_or_equipment = models.CharField(max_length=100, verbose_name='Material or Equipment')
-    location = models.CharField(max_length=200, verbose_name='Location (include floor and specific location)')
+    material_or_equipment = models.CharField(max_length=150, verbose_name='Material or Equipment')
+    location = models.CharField(max_length=300, verbose_name='Location (include floor and specific location)')
 
     def __str__(self):
         return self.material_or_equipment
 
 class BuildingPlan(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Plan Name')
+    name = models.CharField(max_length=150, verbose_name='Plan Name')
     description = models.TextField(verbose_name='Plan Description')
     color_code = models.CharField(max_length=20, verbose_name='Color Code')
 
@@ -1115,21 +1115,21 @@ class InsuranceInformation(models.Model):
     policy_inception_date = models.DateField(verbose_name='Policy Inception Date')
     policy_expiration_date = models.DateField(verbose_name='Policy Expiration Date')
     property_covered = models.CharField(max_length=20, choices=PROPERTY_CHOICES, verbose_name='Property Covered')
-    amount_of_coverage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Amount of Coverage')
-    deductible = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
+    amount_of_coverage = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Coverage')
+    deductible = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
 
     def __str__(self):
         return f'Policy: {self.policy_number}, Property: {self.get_property_covered_display()}'
 
 
 class InsuranceCarrier(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Company/Organization')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    name = models.CharField(max_length=150, verbose_name='Company/Organization')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=50, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell phone', blank=True)
     after_hours_phone = models.CharField(max_length=15, verbose_name='After hours phone', blank=True)
@@ -1139,18 +1139,18 @@ class InsuranceCarrier(models.Model):
         return self.name
 
 class InsuranceAgent(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Company/Organization')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    name = models.CharField(max_length=150, verbose_name='Company/Organization')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=50, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell phone', blank=True)
     after_hours_phone = models.CharField(max_length=15, verbose_name='After hours phone', blank=True)
     pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
-    frequency_of_review = models.CharField(max_length=100, verbose_name='Frequency of review and updating of this policy')
+    frequency_of_review = models.CharField(max_length=150, verbose_name='Frequency of review and updating of this policy')
     person_responsible_for_review = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Person responsible for reviewing and updating this policy')
 
     def __str__(self):
@@ -1160,37 +1160,37 @@ class BusinessInterruptionInsurance(models.Model):
     policy_number = models.CharField(max_length=50, verbose_name='Policy Number')
     inception_date = models.DateField(verbose_name='Policy Inception Date')
     expiration_date = models.DateField(verbose_name='Policy Expiration Date')
-    coverage_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Amount of Business Interruption Insurance Provided')
-    deductible = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
+    coverage_amount = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Business Interruption Insurance Provided')
+    deductible = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
     
     # Insurance carrier information
-    carrier_company = models.CharField(max_length=100, verbose_name='Company/Organization')
-    carrier_contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    carrier_address1 = models.CharField(max_length=100, verbose_name='Address1')
-    carrier_address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    carrier_company = models.CharField(max_length=150, verbose_name='Company/Organization')
+    carrier_contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    carrier_address1 = models.CharField(max_length=150, verbose_name='Address1')
+    carrier_address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     carrier_city = models.CharField(max_length=50, verbose_name='City')
     carrier_state = models.CharField(max_length=2, verbose_name='State')
-    carrier_zip = models.CharField(max_length=10, verbose_name='Zip')
+    carrier_zip = models.CharField(max_length=50, verbose_name='Zip')
     carrier_phone = models.CharField(max_length=15, verbose_name='Phone')
     carrier_cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     carrier_after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     carrier_pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
     
     # Insurance agent or broker information
-    agent_company = models.CharField(max_length=100, verbose_name='Company/Organization')
-    agent_contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    agent_address1 = models.CharField(max_length=100, verbose_name='Address1')
-    agent_address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    agent_company = models.CharField(max_length=150, verbose_name='Company/Organization')
+    agent_contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    agent_address1 = models.CharField(max_length=150, verbose_name='Address1')
+    agent_address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     agent_city = models.CharField(max_length=50, verbose_name='City')
     agent_state = models.CharField(max_length=2, verbose_name='State')
-    agent_zip = models.CharField(max_length=10, verbose_name='Zip')
+    agent_zip = models.CharField(max_length=50, verbose_name='Zip')
     agent_phone = models.CharField(max_length=15, verbose_name='Phone')
     agent_cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     agent_after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     agent_pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
     
     review_frequency = models.CharField(max_length=50, verbose_name='Frequency of Review and Updating of this Policy')
-    responsible_person = models.CharField(max_length=100, verbose_name='Person Responsible for Reviewing and Updating this Policy', choices=YOUR_CHOICES)
+    responsible_person = models.CharField(max_length=150, verbose_name='Person Responsible for Reviewing and Updating this Policy', choices=YOUR_CHOICES)
 
     def __str__(self):
         return f'Policy Number: {self.policy_number}'
@@ -1199,49 +1199,49 @@ class ExtraExpensesInsurance(models.Model):
     policy_number = models.CharField(max_length=50, verbose_name='Policy Number')
     inception_date = models.DateField(verbose_name='Policy Inception Date')
     expiration_date = models.DateField(verbose_name='Policy Expiration Date')
-    coverage_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Amount of Extra Expenses Insurance Provided')
-    deductible = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
+    coverage_amount = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Extra Expenses Insurance Provided')
+    deductible = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
     
     # Insurance carrier information
-    carrier_company = models.CharField(max_length=100, verbose_name='Company/Organization')
-    carrier_contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    carrier_address1 = models.CharField(max_length=100, verbose_name='Address1')
-    carrier_address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    carrier_company = models.CharField(max_length=150, verbose_name='Company/Organization')
+    carrier_contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    carrier_address1 = models.CharField(max_length=150, verbose_name='Address1')
+    carrier_address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     carrier_city = models.CharField(max_length=50, verbose_name='City')
     carrier_state = models.CharField(max_length=2, verbose_name='State')
-    carrier_zip = models.CharField(max_length=10, verbose_name='Zip')
+    carrier_zip = models.CharField(max_length=50, verbose_name='Zip')
     carrier_phone = models.CharField(max_length=15, verbose_name='Phone')
     carrier_cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     carrier_after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     carrier_pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
     
     # Insurance agent or broker information
-    agent_company = models.CharField(max_length=100, verbose_name='Company/Organization')
-    agent_contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    agent_address1 = models.CharField(max_length=100, verbose_name='Address1')
-    agent_address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    agent_company = models.CharField(max_length=150, verbose_name='Company/Organization')
+    agent_contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    agent_address1 = models.CharField(max_length=150, verbose_name='Address1')
+    agent_address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     agent_city = models.CharField(max_length=50, verbose_name='City')
     agent_state = models.CharField(max_length=2, verbose_name='State')
-    agent_zip = models.CharField(max_length=10, verbose_name='Zip')
+    agent_zip = models.CharField(max_length=50, verbose_name='Zip')
     agent_phone = models.CharField(max_length=15, verbose_name='Phone')
     agent_cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
     agent_after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone', blank=True)
     agent_pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
     
     review_frequency = models.CharField(max_length=50, verbose_name='Frequency of Review and Updating of this Policy')
-    responsible_person = models.CharField(max_length=100, verbose_name='Person Responsible for Reviewing and Updating this Policy', choices=YOUR_CHOICES)
+    responsible_person = models.CharField(max_length=150, verbose_name='Person Responsible for Reviewing and Updating this Policy', choices=YOUR_CHOICES)
 
     def __str__(self):
         return f'Policy Number: {self.policy_number}'
 
 class SpecialCollectionsInsurance(models.Model):
-    office_department = models.CharField(max_length=100, verbose_name='Office/Department in Charge of Self-Insurance')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
-    address1 = models.CharField(max_length=100, verbose_name='Address1')
-    address2 = models.CharField(max_length=100, verbose_name='Address2', blank=True)
+    office_department = models.CharField(max_length=150, verbose_name='Office/Department in Charge of Self-Insurance')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    address1 = models.CharField(max_length=150, verbose_name='Address1')
+    address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip')
     work_phone = models.CharField(max_length=15, verbose_name='Work Phone')
     home_phone = models.CharField(max_length=15, verbose_name='Home Phone', blank=True)
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
@@ -1250,11 +1250,11 @@ class SpecialCollectionsInsurance(models.Model):
         return f'Office/Department: {self.office_department} - Contact Person: {self.contact_person}'
 
 class InsuranceCoverage(models.Model):
-    funds_for_recovery = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Funds Available for Salvage, Repair, and/or Replacement of Collections (in dollars)')
+    funds_for_recovery = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Funds Available for Salvage, Repair, and/or Replacement of Collections (in dollars)')
     collections_appraised = models.TextField(verbose_name='Collections Appraised for Insurance Purposes')
     date_of_last_appraisal = models.DateField(verbose_name='Date of Last Appraisal')
-    person_conducting_appraisal = models.CharField(max_length=100, verbose_name='Person Conducting Appraisal')
-    person_responsible_for_evaluation = models.CharField(max_length=100, verbose_name='Person Responsible for Periodic Evaluation of Funds')
+    person_conducting_appraisal = models.CharField(max_length=150, verbose_name='Person Conducting Appraisal')
+    person_responsible_for_evaluation = models.CharField(max_length=150, verbose_name='Person Responsible for Periodic Evaluation of Funds')
     frequency_of_evaluation = models.CharField(max_length=50, verbose_name='Frequency of Evaluation and Increase of Funds Set Aside for Self-Insurance')
     procedures_in_case_of_damage = models.TextField(verbose_name='Procedures in Case of Damage or Loss')
     documentation_required = models.TextField(verbose_name='Documentation Required to Prove Loss')
@@ -1263,36 +1263,36 @@ class InsuranceCoverage(models.Model):
         return f'Funds Available: ${self.funds_for_recovery}'
 
 class EvacuationProcedure(models.Model):
-    area_or_floor = models.CharField(max_length=100, verbose_name='Area/Floor')
-    person_responsible = models.CharField(max_length=100, verbose_name='Person Responsible for Clearing Area')
-    backup_1 = models.CharField(max_length=100, verbose_name='Backup #1')
-    backup_2 = models.CharField(max_length=100, verbose_name='Backup #2')
+    area_or_floor = models.CharField(max_length=150, verbose_name='Area/Floor')
+    person_responsible = models.CharField(max_length=150, verbose_name='Person Responsible for Clearing Area')
+    backup_1 = models.CharField(max_length=150, verbose_name='Backup #1')
+    backup_2 = models.CharField(max_length=150, verbose_name='Backup #2')
     evacuation_procedures = models.TextField(verbose_name='Procedures for Evacuating the Building, Including Disabled Personnel or Patrons')
 
     def __str__(self):
         return f'Evacuation Area: {self.area_or_floor}'
 
 class StaffVisitorLog(models.Model):
-    area_or_floor = models.CharField(max_length=100, verbose_name='Area/Floor')
-    person_responsible = models.CharField(max_length=100, verbose_name='Person Responsible for List')
-    backup_1 = models.CharField(max_length=100, verbose_name='Backup #1')
-    backup_2 = models.CharField(max_length=100, verbose_name='Backup #2')
+    area_or_floor = models.CharField(max_length=150, verbose_name='Area/Floor')
+    person_responsible = models.CharField(max_length=150, verbose_name='Person Responsible for List')
+    backup_1 = models.CharField(max_length=150, verbose_name='Backup #1')
+    backup_2 = models.CharField(max_length=150, verbose_name='Backup #2')
 
     def __str__(self):
         return f'Staff/Visitor Log for {self.area_or_floor}'
 
 class AssemblyArea(models.Model):
-    area_or_floor = models.CharField(max_length=100, verbose_name='Area/Floor')
-    staff_member_in_charge = models.CharField(max_length=100, verbose_name='Staff Member in Charge of Head Count')
-    backup_1 = models.CharField(max_length=100, verbose_name='Backup #1')
-    backup_2 = models.CharField(max_length=100, verbose_name='Backup #2')
-    location = models.CharField(max_length=200, verbose_name='Location')
+    area_or_floor = models.CharField(max_length=150, verbose_name='Area/Floor')
+    staff_member_in_charge = models.CharField(max_length=150, verbose_name='Staff Member in Charge of Head Count')
+    backup_1 = models.CharField(max_length=150, verbose_name='Backup #1')
+    backup_2 = models.CharField(max_length=150, verbose_name='Backup #2')
+    location = models.CharField(max_length=300, verbose_name='Location')
 
     def __str__(self):
         return f'Assembly Area: {self.area_or_floor}'
 
 class EmergencyCallList(models.Model):
-    staff_member = models.CharField(max_length=100, verbose_name='Staff Member')
+    staff_member = models.CharField(max_length=150, verbose_name='Staff Member')
     estimated_response_time = models.CharField(max_length=50, verbose_name='Estimated Response Time')
     position_on_call_list = models.PositiveIntegerField(verbose_name='Position on Call List')
 
@@ -1301,9 +1301,9 @@ class EmergencyCallList(models.Model):
 
 
 class CommandCenter(models.Model):
-    command_center_location = models.CharField(max_length=200, verbose_name='Command Center Location')
-    alternate_location_1 = models.CharField(max_length=200, verbose_name='Alternate Location #1')
-    alternate_location_2 = models.CharField(max_length=200, verbose_name='Alternate Location #2 (Off-site)')
+    command_center_location = models.CharField(max_length=300, verbose_name='Command Center Location')
+    alternate_location_1 = models.CharField(max_length=300, verbose_name='Alternate Location #1')
+    alternate_location_2 = models.CharField(max_length=300, verbose_name='Alternate Location #2 (Off-site)')
 
     def __str__(self):
         return f'Command Center: {self.command_center_location}'
@@ -1315,9 +1315,9 @@ class CollectionStorageLocation(models.Model):
     )
 
     location_type = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name='Location Type')
-    location = models.CharField(max_length=200, verbose_name='Location')
-    space_available = models.CharField(max_length=100, verbose_name='Space Available')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
+    location = models.CharField(max_length=300, verbose_name='Location')
+    space_available = models.CharField(max_length=150, verbose_name='Space Available')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After-Hours Phone')
@@ -1333,9 +1333,9 @@ class DryingSpace(models.Model):
     )
 
     location_type = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name='Location Type')
-    location = models.CharField(max_length=200, verbose_name='Location')
-    space_available = models.CharField(max_length=100, verbose_name='Space Available')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person')
+    location = models.CharField(max_length=300, verbose_name='Location')
+    space_available = models.CharField(max_length=150, verbose_name='Space Available')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After-Hours Phone')
@@ -1346,11 +1346,11 @@ class DryingSpace(models.Model):
 
 class FireDepartmentInfo(models.Model):
     last_inspection_date = models.DateField(verbose_name='Date of Last Inspection by Fire Marshal')
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person within Fire Department')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person within Fire Department')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone')
-    in_house_liaison = models.CharField(max_length=100, verbose_name='In-house Liaison to Fire Department')
-    backup_liaison = models.CharField(max_length=100, verbose_name='Backup Liaison')
+    in_house_liaison = models.CharField(max_length=150, verbose_name='In-house Liaison to Fire Department')
+    backup_liaison = models.CharField(max_length=150, verbose_name='Backup Liaison')
     last_in_house_review_date = models.DateField(verbose_name='Date of Last In-house Review of Collection Priorities')
     last_on_site_review_date = models.DateField(verbose_name='Date of Last On-site Review with Fire Department Personnel')
 
@@ -1358,39 +1358,39 @@ class FireDepartmentInfo(models.Model):
         return f'Fire Department Information'
 
 class PoliceDepartmentInfo(models.Model):
-    contact_person = models.CharField(max_length=100, verbose_name='Contact Person within Police Department')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person within Police Department')
     title = models.CharField(max_length=50, verbose_name='Title')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone')
-    in_house_liaison = models.CharField(max_length=100, verbose_name='In-house Liaison to Police Department')
-    backup_liaison = models.CharField(max_length=100, verbose_name='Backup Liaison')
+    in_house_liaison = models.CharField(max_length=150, verbose_name='In-house Liaison to Police Department')
+    backup_liaison = models.CharField(max_length=150, verbose_name='Backup Liaison')
     last_on_site_review_date = models.DateField(verbose_name='Date of Last On-site Review with Police Department Personnel')
 
     def __str__(self):
         return f'Police Department Information'
 
 class EmergencyManagementAgency(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Agency Name')
-    address1 = models.CharField(max_length=100, verbose_name='Address Line 1')
-    address2 = models.CharField(max_length=100, verbose_name='Address Line 2')
+    name = models.CharField(max_length=150, verbose_name='Agency Name')
+    address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
     city = models.CharField(max_length=50, verbose_name='City')
     state = models.CharField(max_length=2, verbose_name='State')
-    zip_code = models.CharField(max_length=10, verbose_name='Zip Code')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     fax = models.CharField(max_length=15, verbose_name='Fax')
-    website = models.URLField(max_length=200, verbose_name='Website')
+    website = models.URLField(max_length=300, verbose_name='Website')
 
     def __str__(self):
         return self.name
 
 class LocalEmergencyManagement(models.Model):
-    agency_name = models.CharField(max_length=100, verbose_name='Local Emergency Management Agency')
+    agency_name = models.CharField(max_length=150, verbose_name='Local Emergency Management Agency')
     contact_persons = models.TextField(verbose_name='Contact Person(s)')
     titles = models.TextField(verbose_name='Title(s)')
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone')
-    in_house_liaison = models.CharField(max_length=100, verbose_name='In-house Liaison to Local Emergency Management Agencies')
-    backup_liaison = models.CharField(max_length=100, verbose_name='Backup Liaison')
+    in_house_liaison = models.CharField(max_length=150, verbose_name='In-house Liaison to Local Emergency Management Agencies')
+    backup_liaison = models.CharField(max_length=150, verbose_name='Backup Liaison')
     last_on_site_review_date = models.DateField(verbose_name='Date of Last On-site Review with Emergency Management Personnel')
     procedures_description = models.TextField(verbose_name='Description of Applicable Local Procedures for Managing Disasters')
 
@@ -1398,18 +1398,18 @@ class LocalEmergencyManagement(models.Model):
         return f'Local Emergency Management Agency: {self.agency_name}'
 
 class EmergencyServices(models.Model):
-    ambulance_name = models.CharField(max_length=100, verbose_name='Ambulance Name')
+    ambulance_name = models.CharField(max_length=150, verbose_name='Ambulance Name')
     ambulance_phone = models.CharField(max_length=15, verbose_name='Ambulance Phone')
     is_911_available = models.BooleanField(default=False, verbose_name='Are 911 services available?')
-    in_house_security_name = models.CharField(max_length=100, verbose_name='In-house Security Name')
+    in_house_security_name = models.CharField(max_length=150, verbose_name='In-house Security Name')
     in_house_security_phone = models.CharField(max_length=15, verbose_name='In-house Security Phone')
     in_house_security_after_hours_phone = models.CharField(max_length=15, verbose_name='In-house Security After-hours Phone')
     in_house_security_cell_phone = models.CharField(max_length=15, verbose_name='In-house Security Cell Phone')
-    security_monitoring_name = models.CharField(max_length=100, verbose_name='Security Monitoring Company Name')
+    security_monitoring_name = models.CharField(max_length=150F, verbose_name='Security Monitoring Company Name')
     security_monitoring_phone = models.CharField(max_length=15, verbose_name='Security Monitoring Company Phone')
     security_monitoring_after_hours_phone = models.CharField(max_length=15, verbose_name='Security Monitoring Company After-hours Phone')
     security_monitoring_cell_phone = models.CharField(max_length=15, verbose_name='Security Monitoring Company Cell Phone')
-    other_name = models.CharField(max_length=100, verbose_name='Other Name')
+    other_name = models.CharField(max_length=150, verbose_name='Other Name')
     other_phone = models.CharField(max_length=15, verbose_name='Other Phone')
     other_after_hours_phone = models.CharField(max_length=15, verbose_name='Other After-hours Phone')
     other_cell_phone = models.CharField(max_length=15, verbose_name='Other Cell Phone')
