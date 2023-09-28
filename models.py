@@ -37,6 +37,16 @@ class City(models.Model):
         
     def __str__(self):
              return self.name
+
+
+class Position(models.Model): #replaces title class
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
     
     
 class ContactPerson(models.Model):
@@ -45,21 +55,23 @@ class ContactPerson(models.Model):
     phone = models.CharField(default='', max_length=30)
     email = models.EmailField()
 
-class Title(models.Model):
-    director = models.CharField(max_length=50)
-    treasury = models.CharField(max_length=50)
-    director_assistant = models.CharField(max_length=50)
-    officer = models.CharField(max_length=50)
-    maintenance = models.CharField(max_length=50)
+# We can replace this class with the Position class
+#class Title(models.Model):
+#    director = models.CharField(max_length=50)
+#    treasury = models.CharField(max_length=50)
+#    director_assistant = models.CharField(max_length=50)
+#    officer = models.CharField(max_length=50)
+#    maintenance = models.CharField(max_length=50)
 
-class HomeAddress(models.Model):
-    address.models.models.CharField(_("address"), max_length=150)
-    city_id = models.ForeignKey("City", on_delete=models.NOTHING, related_name="home address")
-    address_1 = models.CharField(_("address"), max_length=255)
-    address_2 = models.CharField(_("address"), max_length=255, blank=True)
-             
-    def __str__(self):
-             return self.name
+# No longer needed, as we can reference Address as home_address = models.ForeignKey....
+#class HomeAddress(models.Model):
+#    address.models.models.CharField(_("address"), max_length=150)
+#    city_id = models.ForeignKey("City", on_delete=models.NOTHING, related_name="home address")
+#    address_1 = models.CharField(_("address"), max_length=255)
+#    address_2 = models.CharField(_("address"), max_length=255, blank=True)
+#             
+#    def __str__(self):
+#             return self.name
     
 class StaffAndKeyPersonnel(models.Model):
     first_name = models.CharField(max_length=150)
@@ -510,7 +522,7 @@ class SmokeHeatDetectionMonitoringAgency(models.Model):
         verbose_name_plural = 'Smoke and Heat Detection System Monitoring Agencies'
 
 class SmokeHeatDetectionServiceCompany(models.Model):
-         name = models.CharField(max_length=150, verbose_name='Name')
+    name = models.CharField(max_length=150, verbose_name='Name')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
     address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
@@ -559,8 +571,10 @@ class SprinklerSystemMonitoringAgency(models.Model):
 
     class Meta:
         verbose_name_plural = 'Sprinkler System Monitoring Agencies'
+
+
 class SprinklerSystemServiceCompany(models.Model):
-         name = models.CharField(max_length=150, verbose_name='Name')
+    name = models.CharField(max_length=150, verbose_name='Name')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     address1 = models.CharField(max_length=150, verbose_name='Address Line 1')
     address2 = models.CharField(max_length=150, blank=True, verbose_name='Address Line 2')
@@ -601,6 +615,10 @@ class GaseousFireSuppressionSystem(models.Model):
     # Monitoring and Service Information
     monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
     
+    #monitoring agency alpha
+    #monitoring_agency = models.ForeignKey("Vendor", on_delete=models.CASCADE, related_name="gas_suppression_agencies")
+    #service_agency = models.ForeignKey("Vendor", on_delete=models.CASCADE, related_name="gas_suppression_services")
+
     # Monitoring Agency
     monitoring_agency_name = models.CharField(max_length=150, verbose_name='Monitoring Agency Name', blank=True)
     monitoring_contact_person = models.CharField(max_length=150, verbose_name='Contact Person', blank=True)
@@ -632,6 +650,21 @@ class GaseousFireSuppressionSystem(models.Model):
 
     class Meta:
         verbose_name_plural = 'Gaseous Fire Suppression Systems'
+
+class Vendor(models.Model): #This class replaces lines 622 to 646
+    name = models.CharField(max_lenght=150)
+    main_contact = models.ForeignKey("Contacts", on_delete=models.CASCADE, related_name="vendors")
+    main_address = models.ManyToManyField("Address", related_name="vendors")
+    main_telephone = models.CharField(max_lenght=20)
+    after_hours_telephone = models.CharField(max_lenght=20, null=True)
+    pager = models.CharField(max_length=20, null=True)
+    email = models.EmailField(max_lenght=100, null=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 class WaterDetector(models.Model):
     detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
