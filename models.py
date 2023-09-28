@@ -7,16 +7,25 @@ from django.contrib.auth.models import User
 #Institution Information
 class Institution(models.Model):
     name = models.CharField(max_length=40)
-    #location_name = models.CharField(max_length=150)
-    address.models.CharField(_("address"), max_length=150)
-    city_id = models.ForeignKey("City", on_delete=models.NOTHING, related_name="institutions")
-    zip_code = models.CharField(_("zip code"), max_length=10)
+    code = models.CharField(max_lenght=3)
+    address = models.ForeignKey("Address", on_delete=models.CASCADE, related_name="institutions")    
     
     class Meta:
-        ordering = ['name']
+        ordering = ['name', 'code']
         
     def __str__(self):
         return self.name
+
+class Address(models.Model):
+    street = models.CharField(_("address"), max_length=150)
+    city = models.ForeignKey("City", on_delete=models.CASCADE, related_name="addresses")
+    zip_code = models.CharField(_("zip_code"), max_length=10)
+
+    class Meta:
+        ordering = ['street', 'zip_code']
+
+    def __str__(self):
+        return f"{self.street} {self.city.name}, {self.city.state} {self.zip_code}"
 
 class City(models.Model):
     name = models.CharField(_("name"), max_length=100)
