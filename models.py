@@ -387,7 +387,7 @@ class OpeningStaffSchedule(models.Model):
 
     primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_opening_staff', null=True, blank=True)
     backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_opening_staff', null=True, blank=True)
-    day_of_week = models.CharField(max_length=50, choices=DAYS_OF_WEEK, unique=True)
+    day_of_week = models.CharField(max_length=100, choices=DAYS_OF_WEEK, unique=True)
 
     def __str__(self):
         return f'Opening Staff Schedule for {self.get_day_of_week_display()}'
@@ -416,7 +416,7 @@ class FacilitiesInformation(models.Model):
 
 class EmergencyShutOff(models.Model):
     facility_info = models.ForeignKey(FacilitiesInformation, on_delete=models.CASCADE, verbose_name='Facilities Information')
-    shut_off_type = models.CharField(max_length=150, verbose_name='Emergency Shut-Off Type')
+    shut_off_type = models.CharField(max_length=300, verbose_name='Emergency Shut-Off Type')
     location = models.TextField(verbose_name='Location Description')
     procedures = models.TextField(verbose_name='Procedures')
 
@@ -428,7 +428,7 @@ class EmergencyShutOff(models.Model):
 
 class FireDetectionAndSuppression(models.Model):
     # Fire Alarm Pull Box
-    fire_alarm_pull_box = models.CharField(max_length=150, verbose_name='Fire Alarm Pull Box Number/Name')
+    fire_alarm_pull_box = models.CharField(max_length=255, verbose_name='Fire Alarm Pull Box Number/Name')
     fire_alarm_pull_box_location = models.TextField(verbose_name='Location Description')
 
     # Fire Extinguishers
@@ -1313,16 +1313,357 @@ class EmergencyServices(models.Model):
     other_phone = models.CharField(max_length=15, verbose_name='Other Phone')
     other_after_hours_phone = models.CharField(max_length=15, verbose_name='Other After-hours Phone')
     other_cell_phone = models.CharField(max_length=15, verbose_name='Other Cell Phone')
-
+    
     def __str__(self):
         return f'Emergency Services for {self.ambulance_name}'
 
     class Meta:
         verbose_name_plural = 'Emergency Services'
+        
 # maintanance utilities  this is last updated need to clear up the codes
 
 
-
-
+class MaintanaceUtilities(modes.Model):
+    name=models.CharField(max_length=100, verbose_name="organization name")
+    contact_person=models.CharField(max_length=20)
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email =models.EmailField(max_length=100)(max_length=30, verbose_name='via email address')
+    
+    def __str__(self):
+         return self.name
+         
+class FacilitiesManagement(modesl.Model):
+    contact_person=models.CharField(max_length=20)
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email =.models.EmailField(max_length=100)(max_length=30, verbose_name='via email address')
+    
+    def __str__(self):
+         return self.name
+class JanitorialServices(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    email=models.EmailField(max_length=50)
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='via email address')
+    
+    def __str__(self):
+        return self.name
+class Electrician(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class Plumber(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+ class LockSmith(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='pager email address')
+    
+    def __str__(self):
+        return self.name
+class Carpenter(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class Exterminator(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class Carpenter(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class ComputerEmergency(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class LegalAdvisor(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class ArchitectBuilder(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+        
+class GasCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class OilCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class ElectricCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class WaterUtilityCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class TelephoneCampanyCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class ElevatorCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class SprinklerSeriviceCompany(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class HeatingSystemService(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class CoolingSystemService(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class SecuritySystemService(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+class Other(models.Model)
+    name=models.CharField(max_length=150, verbose="name of the organization")
+    contact_person=models.CharField(max_length=20,verbose="contact person")
+    address1=models.CharField(max_length=150, verbose_name="Organization address")
+    address2 = models.CharField(max_length=150, verbose_name='Address Line 2')
+    city = models.CharField(max_length=50, verbose_name='City')
+    state = models.CharField(max_length=50, verbose_name='State')
+    zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
+    phone = models.CharField(max_length=30, verbose_name='Phone')
+    cell_phone_number = models.CharField(max_length=30, verbose_name='cell ephon number')
+    pager_phone = models.CharField(max_length=30, verbose_name='pager Phone')
+    pager_email = models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
+    
+    def __str__(self):
+        return self.name
+#recovery services
 
 
