@@ -5,13 +5,31 @@ from django.contrib.auth.models import User
 
 #starting the model
 #Institution Information
-class InstitutionInformation(models.Model):
+class Institution(models.Model):
     name = models.CharField(max_length=40)
-    location_name = models.CharField(max_length=150)
-    address.models.models.CharField(_("address"), max_length=150)
-    city = models.CharField(_("city"), max_length=150, default="Providence")
+    #location_name = models.CharField(max_length=150)
+    address.models.CharField(_("address"), max_length=150)
+    city_id = models.ForeignKey("City", on_delete=models.NOTHING, related_name="institutions")
+    zip_code = models.CharField(_("zip code"), max_length=10)
+    
+    class Meta:
+        ordering = ['name']
+        
+    def __str__(self):
+        return self.name
+
+class City(models.Model):
+    name = models.CharField(_("name"), max_length=100)
     state = USStateField(_("state"), default="RI")
-    zip_code = models.CharField(_("zip code"), max_length=50, default="43760")
+    
+    class Meta:
+        unique_together = ['name', 'state']
+        ordering = ['name']
+        
+    def __str__(self):
+             return self.name
+    
+    
 class ContactPerson(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -26,11 +44,13 @@ class Title(models.Model):
     maintenance = models.CharField(max_length=50)
 
 class HomeAddress(models.Model):
+    address.models.models.CharField(_("address"), max_length=150)
+    city_id = models.ForeignKey("City", on_delete=models.NOTHING, related_name="home address")
     address_1 = models.CharField(_("address"), max_length=255)
     address_2 = models.CharField(_("address"), max_length=255, blank=True)
-    city = models.CharField(_("city"), max_length=150, default="Providence")
-    state = USStateField(_("state"), default="RI")
-    zip_code = models.CharField(_("zip code"), max_length=50, default="43760")
+             
+    def __str__(self):
+             return self.name
     
 class StaffAndKeyPersonnel(models.Model):
     first_name = models.CharField(max_length=150)
@@ -52,8 +72,8 @@ class StaffAndKeyPersonnel(models.Model):
 def __str__(self):
         return f"{self.first_name} {self.last_name}"
    # see the reference here for the choices >https://docs.djangoproject.com/en/4.2/ref/models/fields/
-from django.db import models
-
+   
+   
 class Reporter(models.Model):
     name = models.CharField(max_length=150)
     email = models.EmailField()
@@ -413,7 +433,7 @@ class FacilitiesInformation(models.Model):
 
     class Meta:
         verbose_name_plural = 'Facilities Information'
-
+# need to fix the code i
 class EmergencyShutOff(models.Model):
     facility_info = models.ForeignKey(FacilitiesInformation, on_delete=models.CASCADE, verbose_name='Facilities Information')
     shut_off_type = models.CharField(max_length=300, verbose_name='Emergency Shut-Off Type')
@@ -438,12 +458,12 @@ class FireDetectionAndSuppression(models.Model):
         ('CO2', 'CO2'),
         ('Mist', 'Mist'),
     ]
-    fire_extinguisher_type = models.CharField(max_length=50, choices=FIRE_EXTINGUISHER_TYPES, verbose_name='Type of Fire Extinguisher')
+    fire_extinguisher_type = models.CharField(max_length=200, choices=FIRE_EXTINGUISHER_TYPES, verbose_name='Type of Fire Extinguisher')
     fire_extinguisher_location = models.TextField(verbose_name='Location Description')
     last_inspection_date = models.DateField(verbose_name='Date of Last Inspection')
 
     # Smoke and Heat Detectors
-    smoke_heat_detector_type = models.CharField(max_length=150, verbose_name='Type of Detector')
+    smoke_heat_detector_type = models.CharField(max_length=300, verbose_name='Type of Detector')
     smoke_heat_detector_location = models.TextField(verbose_name='Location Description')
 
     # Monitoring and Service
