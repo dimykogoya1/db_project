@@ -49,11 +49,12 @@ class Position(models.Model): #replaces title class
         return self.name
     
     
-class ContactPerson(models.Model):
+class Contact(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     phone = models.CharField(default='', max_length=30)
     email = models.EmailField()
+    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="contacts")
 
 # We can replace this class with the Position class
 #class Title(models.Model):
@@ -653,7 +654,7 @@ class GaseousFireSuppressionSystem(models.Model):
 
 class Vendor(models.Model): #This class replaces lines 622 to 646
     name = models.CharField(max_lenght=150)
-    main_contact = models.ForeignKey("Contacts", on_delete=models.CASCADE, related_name="vendors")
+    main_contact = models.ForeignKey("Contact", on_delete=models.CASCADE, related_name="vendors")
     main_address = models.ManyToManyField("Address", related_name="vendors")
     main_telephone = models.CharField(max_lenght=20)
     after_hours_telephone = models.CharField(max_lenght=20, null=True)
