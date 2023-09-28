@@ -46,11 +46,15 @@ class Title(models.Model):
 class HomeAddress(models.Model):
     address.models.models.CharField(_("address"), max_length=150)
     city_id = models.ForeignKey("City", on_delete=models.NOTHING, related_name="home address")
-    address_1 = models.CharField(_("address"), max_length=255)
+    address_1 = models.CharField(("address"), max_length=255)
     address_2 = models.CharField(_("address"), max_length=255, blank=True)
+    
              
     def __str__(self):
              return self.name
+         
+         
+         
     
 class StaffAndKeyPersonnel(models.Model):
     first_name = models.CharField(max_length=150)
@@ -61,10 +65,7 @@ class StaffAndKeyPersonnel(models.Model):
     
     home_address_line_1 = models.CharField(max_length=255)
     home_address_line_2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=150)
-    state = models.CharField(max_length=150)
-    zip_code = models.CharField(max_length=50)
-    
+    city = models.ForeignKey("City", verbose_name=_("city name"), on_delete=models.CASCADE)(max_length=150)
     home_phone = models.CharField(max_length=20, blank=True, null=True)
     cell_phone = models.CharField(max_length=20, blank=True, null=True)
     pager_number = models.CharField(max_length=20, blank=True, null=True)
