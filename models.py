@@ -69,8 +69,12 @@ class StaffAndKeyPersonnel(models.Model):
     cell_phone = models.CharField(max_length=20, blank=True, null=True)
     pager_number = models.CharField(max_length=20, blank=True, null=True)
     home_email = models.EmailField(blank=True, null=True)
+    
+    
 def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+    
    # see the reference here for the choices >https://docs.djangoproject.com/en/4.2/ref/models/fields/
    
    
