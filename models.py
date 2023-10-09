@@ -85,44 +85,15 @@ TASK_CHOICES = [
     ('MBI', 'Maintaining Budy Institutions'),
     ('IT', 'Information Technology'),
 ]
-  def
-# Define the DisasterPlanResponsibility model
-class DisasterPlanResponsibility(models.Model):
-    RESPONSIBILITY_CHOICES = [
-        
-        ('Collecting insurance and accounting information', 'Collecting insurance and accounting information'),
-        ('Collecting facilities information and preparing floor plans', 'Collecting facilities information and preparing floor plans'),
-        ('Collecting information about local emergency services', 'Collecting information about local emergency services'),
-        ('Gathering internal supplies', 'Gathering internal supplies'),
-        ('Collecting information about external supplies', 'Collecting information about external supplies'),
-        ('Devising emergency response and evacuation procedures', 'Devising emergency response and evacuation procedures'),
-        ('Preparing an emergency call list', 'Preparing an emergency call list'),
-        ('Identifying a potential command center and/or alternative storage or drying space', 'Identifying a potential command center and/or alternative storage or drying space'),
-        ('Identifying potential volunteers and/or workers', 'Identifying potential volunteers and/or workers'),
-        ('Coordinating staff training', 'Coordinating staff training'),
-        ('Coordinating distribution, review, and updating of the plan', 'Coordinating distribution, review, and updating of the plan'),
-        ('Preparing communications and PR kit', 'Preparing communications and PR kit'),
-        ('Communicating with bank or financial institution', 'Communicating with bank or financial institution'),
-        ('Maintaining relationships with "buddy" institutions', 'Maintaining relationships with "buddy" institutions'),
-        ('Information Technology', 'Information Technology'),
-    ]
+  def __str __(self):
+    return self.task
 
-    responsibility = models.CharField(max_length=300, choices=RESPONSIBILITY_CHOICES)
-    description = models.TextField()
-    responsible_team_member = models.ForeignKey(Reporter, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.responsibility
-
-# boolean https://docs.djangoproject.com/en/4.2/ref/models/fields/
 RISK_CHOICES = (
     (1, 'Must be addressed'),
     (2, 'Should be addressed'),
     (3, 'Could be addressed'),
     (4, 'Not applicable/no action needed'),
 )
-
-# Base class for all material types
 class BaseMaterial(models.Model):
     name = models.CharField(max_length=50)
     risk_level = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Risk Level')
