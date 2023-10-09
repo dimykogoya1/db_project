@@ -62,16 +62,34 @@ class Reporter(models.Model):
 
     def __str__(self):
         return self.name
-
+class TaskResponsibilities(models.Model):
+TASK_CHOICES = [
+    ('GCI', 'Collection Information'),
+    ('PSL', 'Preparing a staff list'),
+    ('AR', 'Assessing Risk'),
+    ('OCP', 'Opening clossing Procedurse'),
+    ('DSP', 'Determining Salvage Priorities'),
+    ('PMC', 'Preventive Maintenace Check List'),
+    ('IAI', 'Collection Insurance and Acccounting Information'),
+    ('FPP', 'Facilitaiting Information and Preparing Floor Plans'),
+    ('CIE', 'collection Information Local Emergency'),
+    ('GIS', 'Gathering Internal Supplies'),
+    ('DEP', 'Devising Emergency Response and Evacuation Procedures'),
+    ('IPC', 'Identifying Potential Command center'),
+    ('PEC', 'Preparing Emergency Call List'),
+    ('IPT', 'Identifying Potential Volunteers'),
+    ('CST', 'Coordinating Staff Training'),
+    ('CSD', 'Coordinating Staff Distribution'),
+    ('PCK', 'Preparing communication PR Kit'),
+    ('CBI', 'Communicating with Bank or Financial Institutions'),
+    ('MBI', 'Maintaining Budy Institutions'),
+    ('IT', 'Information Technology'),
+]
+  def
 # Define the DisasterPlanResponsibility model
 class DisasterPlanResponsibility(models.Model):
     RESPONSIBILITY_CHOICES = [
-        ('Gathering collections information', 'Gathering collections information'),
-        ('Preparing a staff list', 'Preparing a staff list'),
-        ('Assessing risks', 'Assessing risks'),
-        ('Devising opening and closing procedures', 'Devising opening and closing procedures'),
-        ('Devising a preventive maintenance checklist', 'Devising a preventive maintenance checklist'),
-        ('Determining salvage priorities', 'Determining salvage priorities'),
+        
         ('Collecting insurance and accounting information', 'Collecting insurance and accounting information'),
         ('Collecting facilities information and preparing floor plans', 'Collecting facilities information and preparing floor plans'),
         ('Collecting information about local emergency services', 'Collecting information about local emergency services'),
