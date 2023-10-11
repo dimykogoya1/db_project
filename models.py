@@ -63,7 +63,7 @@ class Reporter(models.Model):
     def __str__(self):
         return self.name
 class TaskResponsibilities(models.Model):
-TASK_CHOICES = [
+TASK_CHOICES = (
     ('GCI', 'Collection Information'),
     ('PSL', 'Preparing a staff list'),
     ('AR', 'Assessing Risk'),
@@ -84,10 +84,13 @@ TASK_CHOICES = [
     ('CBI', 'Communicating with Bank or Financial Institutions'),
     ('MBI', 'Maintaining Budy Institutions'),
     ('IT', 'Information Technology'),
-]
-  def __str __(self):
-    return self.task
-
+)
+responsibility = models.CharField(max_length=300, choices=RESPONSIBILITY_CHOICES)
+description = models.TextField()
+responsible_team_member = models.ForeignKey(Reporter, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.responsibility
+        
 RISK_CHOICES = (
     (1, 'Must be addressed'),
     (2, 'Should be addressed'),
@@ -142,7 +145,12 @@ RISK_CHOICES = (
     (3, 'Could be addressed'),
     (4, 'Not applicable/no action needed'),
 )
-
+class Procedures(models.Model):
+  ITEMS_CHOICES =(
+      (''),
+      
+  )
+  
 class BuildingSystemsProcedures(models.Model):
     roof = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Roof')
     sky_lights = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Sky Lights')
@@ -457,153 +465,98 @@ class FireDetectionAndSuppression(models.Model):
 
     class Meta:
         verbose_name_plural = 'Fire Detection and Suppression'
+
+class Company(models.Meodel):
+    name = models.ForeignKey("name", verbose_name=_("company name"), on_delete=models.CASCADE)
+    heat_detectors = models.CharField(max_length=50)
+    smoke_detectors = models.CharField(max_length=50)
+    sprinklers = models.CharField(max_length=50, verbose_name='sprinklers system')
+    location = models.CharField(_("location"), max_length=50)
+    
+    class Meta:
+      ordering = ['name']
+    def __str__(self):  
+        return self.name
+    
+class ServiceType(models.Model):
+    name = models.ForeignKey("Type", verbose_name=_("type of service"), on_delete=models.CASCADE)
+    date_created = models.DateField(auto_now=False, auto_now_add=False)
+    date_updated = models.DateField(auto_now=False, auto_now_add=False)
+    description = models.CharField(max_length=250)
+    monitoring_type = models.CharField(max_length=100, verbose_name='monitoring Type')
+    def __str__(self):
+      return f"{self.name} {self.date_created}{self.location}"
         
-#create parent class, subclass, child class-baseCompany
-class CompanyBase(models.Model):
-    name = models.CharField(max_length=150, verbose_name='Name')
+class Service(models.Model):
+    name = models.ForeignKey("Name", verbose_name=_("company name"), on_delete=models.CASCADE)
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person') # foregnkey needed
     address = models.ManyToManyField("Address", related_name='comnpanies')
     phone = models.CharField(max_length=20, verbose_name='Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=20, verbose_name='Pager')
     email = models.EmailField(max_length=150, verbose_name='Email')
-
-    class Meta:
-        abstract = True
-# repeated attributes 
-  # 
-class SmokeHeatDetectionMonitoringAgency(CompanyBase):
-    monitoring_service_type = models.CharField(max_length=100, verbose_name='Monitoring Service Type')
     
-
     def __str__(self):
-        return 'Smoke and Heat Detection System Monitoring Agency'
-
-    class Meta:
-        verbose_name_plural = 'Smoke and Heat Detection System Monitoring Agencies'
-
-class SmokeHeatDetectionServiceCompany(CompanyBase):
-    service_type = models.CharField(max_length=100, verbose_name='Service Type')
-
-    def __str__(self):
-        return 'Smoke and Heat Detection System Service Company'
-
-    class Meta:
-        verbose_name_plural = 'Smoke and Heat Detection System Service Companies'
-
-class SprinklerSystemMonitoringAgency(CompanyBase):
-    monitoring_type = models.CharField(max_length=100, verbose_name='Monitoring Type')
-
-    def __str__(self):
-        return 'Sprinkler System Monitoring Agency'
-
-    class Meta:
-        verbose_name_plural = 'Sprinkler System Monitoring Agencies'
-
-class SprinklerSystemServiceCompany(CompanyBase):
-    service_type = models.CharField(max_length=100, verbose_name='Service Type')
-
-    def __str__(self):
-        return 'Sprinkler System Service Company'
-
-    class Meta:
-        verbose_name_plural = 'Sprinkler System Service Companies'
-
-class GaseousFireSuppressionSystem(models.Model):
-    location = models.CharField(max_length=150, verbose_name='Location')
-    suppression_system_type = models.CharField(max_length=150, verbose_name='Description/Type of Suppression System')
-    age_of_system = models.PositiveIntegerField(verbose_name='Age of System', null=True, blank=True)
-    last_inspection_date = models.DateField(verbose_name='Date of Last Inspection', null=True, blank=True)
-    evacuation_plan_description = models.TextField(verbose_name='Description of Emergency Evacuation Plans', blank=True)
-
-    def __str__(self):
-        return f'Gaseous Fire Suppression System at {self.location}'
-
-    class Meta:
-        verbose_name_plural = 'Gaseous Fire Suppression Systems'
-
-
-    #Monitoring and Service Information
-    monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
+        return self.name
+class Company(models.Model):
+    name = models.ForeignKey("Company", verbose_name=_("Gas company name"), on_delete=models.CASCADE)
+    location = many_to_oneField()
+    city = models.ManyToManyField(verbose_name=_("city name"))
+    street = models.ManyToManyField()
+    zip_code = models.ManyToManyField("app.Model", verbose_name=_(""))
+    state = models.ManyToManyField("Zip Code", verbose_name=_("Zip code Area Code"))
     
-    #Monitoring Agency
-    monitoring_agency_name = models.CharField(max_length=150, verbose_name='Monitoring Agency Name', blank=True)
-    monitoring_contact_person = models.CharField(max_length=150, verbose_name='Contact Person', blank=True)
-    monitoring_address1 = models.CharField(max_length=150, verbose_name='Address 1', blank=True)
-    monitoring_address2 = models.CharField(max_length=150, verbose_name='Address 2', blank=True)
-    monitoring_city = models.CharField(max_length=50, verbose_name='City', blank=True)
-    monitoring_state = models.CharField(max_length=2, verbose_name='State', blank=True)
-    monitoring_zip = models.CharField(max_length=50, verbose_name='Zip', blank=True)
-    monitoring_phone = models.CharField(max_length=20, verbose_name='Phone', blank=True)
-    monitoring_after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone', blank=True)
-    monitoring_pager = models.CharField(max_length=20, verbose_name='Pager', blank=True)
-    monitoring_email = models.EmailField(max_length=150, verbose_name='Email', blank=True)
+    class Meta:
+      ordering = ['name', 'city']
+    def __str__(self):
+        return self.name
     
+class ServicesType(models.Model):
+    agency = models.CharField(_(""), max_length=100)
+    location = models.ForeignKey("Location", verbose_name=_("name of the location"), on_delete=models.CASCADE)
+    services = models.CharField(_("Services"), max_length=100)
     
-    #Service Company
-    service_company_name = models.CharField(max_length=150, verbose_name='Service Company Name', blank=True)
-    service_contact_person = models.CharField(max_length=150, verbose_name='Contact Person', blank=True)
-    service_address1 = models.CharField(max_length=150, verbose_name='Address 1', blank=True)
-    service_address2 = models.CharField(max_length=150, verbose_name='Address 2', blank=True)
-    service_city = models.CharField(max_length=50, verbose_name='City', blank=True)
-    service_state = models.CharField(max_length=2, verbose_name='State', blank=True)
-    service_zip = models.CharField(max_length=50, verbose_name='Zip', blank=True)
-    service_phone = models.CharField(max_length=20, verbose_name='Phone', blank=True)
-    service_after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone', blank=True)
-    service_pager = models.CharField(max_length=20, verbose_name='Pager', blank=True)
-    service_email = models.EmailField(max_length=150, verbose_name='Email', blank=True)
+    def __str__(self):
+        return self.name
+    
+class Services(models.Model):
+    name = models.CharField(max_length=50)
+    date_created = models.DateField(auto_now=False, auto_now_add=False)
+    date_updated = models.DateField(auto_now=False, auto_now_add=False)
+    description = models.CharField(max_length=250, verbose_name='Egergency Evacuation Plans')
+    address1 = models.ManyToManyField("Address", related_name='comnpanies')
+    address2 = models.ManyToManyField("Address", related_name='comnpanies')
+    phone = models.CharField(max_length=20, verbose_name='Phone')
+    after_hours = models.CharField(max_length=20, verbose_name='After Hours Phone')
+    pager = models.CharField(max_length=20, verbose_name='Pager')
+    email = models.EmailField(max_length=150, verbose_name='Email')
+    
+    def __str__(self):
+        return f"{'self.name'} {'city'} {'address'}"
+    
+class WaterDetector(models.Model):
+    name =models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
+    location models.CharField(_("Location"), max_length=50)
+    city models.CharField(_("City"), max_length=50)
+    street =models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Gaseous Fire Suppression System at {self.location}'
-
-    class Meta:
-        verbose_name_plural = 'Gaseous Fire Suppression Systems'
+        return f'Water Detector at {self.location}'
         
-class MonitoringAgency(models.Model):
-        suppression_system_type = models.CharField(max_length=150, verbose_name='Description/Type of Suppression System')
-        age_of_system = models.PositiveIntegerField(verbose_name='Age of System', null=True, blank=True)
-        last_inspection_date = models.DateField(verbose_name='Date of Last Inspection', null=True, blank=True)
-        evacuation_plan_description = models.TextField(verbose_name='Description of Emergency Evacuation Plans', blank=True)
-                        
-        class meta:
-             ordering =['monitoring agency']
-             def __str__(self):
-                     return f'Gaseous Fire Suppression System at {self.location}'
-             
-class WaterDetector(models.Model):
+class Categories(models.Model):
     detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
-    location = models.CharField(max_length=150, verbose_name='Location')
-    
-    # Monitoring and Service Information
+    location = models.ForeignKey(max_length=150, verbose_name='Location', on_delete = models.CASCADE)
     monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
 
-    def __str__(self):
-        return f'Water Detector at {self.location}'
-
     class Meta:
-        verbose_name_plural = 'Water Detectors'
-
-class WaterDetector(models.Model):
-    detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
-    location = models.CharField(max_length=150, verbose_name='Location')
-
-
-    # Monitoring and Service Information
-    monitoring_procedures = models.TextField(
-        verbose_name='Description of Monitoring Procedures',
-        blank=True
-    )
-
+      ordering = ['name']
     def __str__(self):
-        return f'Water Detector at {self.location}'
-
-class WaterDetectorMonitoringAgency(models.Model):
-    water_detector = models.ForeignKey(WaterDetector, on_delete=models.CASCADE, related_name='monitoring_agencies')
-    name = models.CharField(max_length=150, verbose_name='Name')
-    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+        return self.name
+    
+class Address(models.Model):
     address1 = models.CharField(max_length=150, verbose_name='Address1')
     address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
-    city = models.CharField(max_length=150, verbose_name='City')
+    city =models.ForeignKey("city", verbose_name=_("city name"), on_delete=models.CASCADE)
     state = models.CharField(max_length=150, verbose_name='State')
     zip_code = models.CharField(max_length=50, verbose_name='Zip Code')
     phone = models.CharField(max_length=15, verbose_name='Phone')
@@ -612,7 +565,7 @@ class WaterDetectorMonitoringAgency(models.Model):
     email = models.EmailField(verbose_name='Email', blank=True)
 
     def __str__(self):
-        return f'Monitoring Agency for Water Detector at {self.water_detector.location}'
+        return self.name
 
 class SecuritySystem(models.Model):
     location = models.CharField(max_length=150, verbose_name='Location')
@@ -635,8 +588,6 @@ class SecuritySystem(models.Model):
 
     def __str__(self):
         return f'Security System at {self.location}'
-
-from django.db import models
 
 class SecuritySystemBase(models.Model):
     security_system = models.ForeignKey(SecuritySystem, on_delete=models.CASCADE)
