@@ -4,7 +4,7 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 
-#Institution Information
+
 class Institution(models.Model):
     name = models.CharField(max_length=40)
     code= models.CharField(max_length=3)
@@ -107,7 +107,7 @@ class BaseMaterial(models.Model):
     def __str__(self):
         return self.name
 
-# Specific material types
+
 class ArchivalMaterial(BaseMaterial):
     pass
 
@@ -130,28 +130,71 @@ class InstitutionMaterials(models.Model):
     def __str__(self):
         return "Institution Materials"
 
-# Common fields for risk assessments
-class RiskAssessment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    other = models.TextField(blank=True, verbose_name='Other Comments')
+class Priority(models.IntegerChoices):
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
 
+class Colections(models.Model):
+    priority = models.IntegerField(choices = priority.choices)
+    location = models.ForeignKey("Location", on_delete=models.CASCADE, related_name="collections")
+     
+     
+     
+     
+     
+     
+     
+    loca
+    roof = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Roof')
+    sky_lights = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Sky Lights')
+    gutters_down_spouts = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Gutters/Downspouts')
+    internal_roof_drains = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Internal Roof Drains')
+    other_drain_problem = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Other Drain Problem')
+    foundation = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Foundation')
+    wet_basement = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Wet Basement')
+    sump_pump_problems = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Sump Pump Problems')
+    bathroom_kitchens_nearby_collections = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Bathroom/Kitchens Nearby Collections')
+    water_pipes_running_collection_areas = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Water Pipes Running in Collection Areas')
+    water_bearing_hvac_equipment = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Water-Bearing HVAC Equipment')
+    water_detection_systems = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Water Detection Systems')
+    mold_infestation_water_damage = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Mold Infestation/Water Damage')
+    collections_stored_on_the_floor = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Collections Stored on the Floor')
+    collections_stored_in_the_basement = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Collections Stored in the Basement')
+    collections_stored_in_the_attic = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Collections Stored in the Attic')
+  
+  priority = models.IntegerField(choices=Priority.choices)
+    location = models.ForeignKey("Location", on_delete=models.CASCADE, related_name="collections")
+    store = models.BooleanField(default=True)
+    destination = models.ForeignKey("Location", on_delete=models.CASCADE, related_name="collections_destination")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        abstract = True
-
-# Define the choices for the risk levels
-RISK_CHOICES = (
+        ordering = ['priority', 'name']
+        
+    def __str__(self):
+        return f"{self.name}"  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+RISK_CHOICES = [
     (1, 'Must be addressed'),
     (2, 'Should be addressed'),
     (3, 'Could be addressed'),
     (4, 'Not applicable/no action needed'),
-)
-class Procedures(models.Model):
-  ITEMS_CHOICES =(
-      (''),
-      
-  )
-  
-class BuildingSystemsProcedures(models.Model):
+]
+class BuildingProcedures(models.Model):
     roof = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Roof')
     sky_lights = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Sky Lights')
     gutters_down_spouts = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Gutters/Downspouts')
@@ -190,8 +233,7 @@ class ClimateControlRisk(RiskAssessment):
 
     def __str__(self):
         return f'Climate Control Risk Assessment for {self.user.username}'
-
-# Security Risk Assessment
+  
 class SecurityRisk(RiskAssessment):
     automated_security_system = models.IntegerField(choices=RISK_CHOICES, verbose_name='Automated Security System')
     staffing_for_special_collections = models.IntegerField(choices=RISK_CHOICES, verbose_name='Staffing for Special Collections')
@@ -204,7 +246,7 @@ class SecurityRisk(RiskAssessment):
      
     def __str__(self):
         return f'Security Risk Assessment for {self.user.username}'
-# Housekeeping/Pests Risk Assessment
+# Not sure how define the classe?
 class HousekeepingPestsRisk(RiskAssessment):
     pest_infestation = models.IntegerField(choices=RISK_CHOICES, verbose_name='Pest Infestation')
     housekeeping_activities = models.IntegerField(choices=RISK_CHOICES, verbose_name='Housekeeping Activities')
@@ -218,7 +260,7 @@ class HousekeepingPestsRisk(RiskAssessment):
     
     def __str__(self):
         return f'Housekeeping/Pests Risk Assessment for {self.user.username}'
-# Storage Risk Assessment
+
 class StorageRisk(RiskAssessment):
     anchor_shelving = models.IntegerField(choices=RISK_CHOICES, verbose_name='Anchor Shelving to the Wall/Floor/Ceiling')
     brace_shelving = models.IntegerField(choices=RISK_CHOICES, verbose_name='Brace Shelving (to earthquake standards if needed)')
@@ -230,7 +272,7 @@ class StorageRisk(RiskAssessment):
     
     def __str__(self):
         return f'Storage Risk Assessment for {self.user.username}'
-# Personnel Risk Assessment
+
 class PersonnelRisk(RiskAssessment):
     staff_training_emergency_procedures = models.IntegerField(choices=RISK_CHOICES, verbose_name='Staff Training - Emergency Procedures')
     staff_training_security_procedures = models.IntegerField(choices=RISK_CHOICES, verbose_name='Staff Training - Security Procedures')
@@ -342,6 +384,7 @@ class ClosingStaffSchedule(models.Model):
 
     class Meta:
         verbose_name_plural = 'Closing Staff Schedule'
+# ending problems need to 
         
 class Question(models.Model):
   CATEGORY_CHOICES = [
@@ -679,7 +722,7 @@ class TeamResponsibility(models.Model):
     def __str__(self):
         return f'{self.get_responsibility_display()} - {self.team_member.name}'
 
-class LocalBuddyOrganization(models.Model):
+class Organization(models.Model):
     name = models.CharField(max_length=150, verbose_name='Name')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=15, verbose_name='Phone')
@@ -695,10 +738,10 @@ class DataBackup(models.Model):
 
     type_of_data = models.CharField(max_length=150, choices=DATA_TYPE_CHOICES, verbose_name='Type of data')
     location_of_data = models.CharField(max_length=150, verbose_name='Location of Data')
-    person_responsible_for_backup = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='data_backups')
-    on_site_location_of_backup = models.CharField(max_length=150, verbose_name='On-site location of backup', blank=True)
-    off_site_location_of_backup = models.CharField(max_length=150, verbose_name='Off-site location of backup', blank=True)
-    frequency_of_backup = models.CharField(max_length=50, verbose_name='Frequency of backup', blank=True)
+    person_backup = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='data_backups')
+    on_site_backup = models.CharField(max_length=150, verbose_name='On-site location of backup', blank=True)
+    off_site_location = models.CharField(max_length=150, verbose_name='Off-site location of backup', blank=True)
+    frequency = models.CharField(max_length=50, verbose_name='Frequency of backup', blank=True)
 
     def __str__(self):
         return f'{self.type_of_data} - {self.location_of_data}'
@@ -728,44 +771,37 @@ class DataRestoration(CommonFields):
 class Reconfiguration(CommonFields):
     def __str__(self):
         return f'{self.staff_person.name} - {self.outside_person_or_organization}'
-
-class ComputerOperationRelocation(models.Model):
-    location = models.CharField(max_length=150, verbose_name='Location')
-    contact_person = models.CharField(max_length=150, verbose_name='Contact person')
-    phone = models.CharField(max_length=15, verbose_name='Phone', blank=True)
-    cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
-    pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
+    
+class ComputerOperation(models.Model):
+    CATEGORIES =  CHOICES=[
+        ('OR', 'computer Operation Relocation '),
+        ('ERA', 'Emergency Remote Access'),
+        ('P', 'Procedures'),
+        ('LW', 'Library Website '),
+    ]
     procedures = models.TextField(verbose_name='Procedures', blank=True)
-
-    def __str__(self):
-        return self.location
-
-class EmergencyRemoteAccess(models.Model):
-    telephone_voice_mail = models.TextField(verbose_name='Telephone/Voice Mail', blank=True)
-    email = models.TextField(verbose_name='Email', blank=True)
+    computer = models.ForeignKey("computer", verbose_name=("computer operation"),choices =bCATEGORIES_CHOICES, on_delete=models.CASCADE)
     intranet = models.TextField(verbose_name='Intranet', blank=True)
-    library_website = models.TextField(verbose_name='Library Website', blank=True)
-    regional_library_network = models.TextField(verbose_name='Regional Library Network', blank=True)
-    local_online_catalog = models.TextField(verbose_name='Local Online Catalog', blank=True)
-    online_subscription_services = models.TextField(verbose_name='Online Subscription Services', blank=True)
+    website = models.TextField(verbose_name='Library Website', blank=True)
+    regional_network = models.TextField(verbose_name='Regional Library Network', blank=True)
+    online_catalog = models.TextField(verbose_name='Local Online Catalog', blank=True)
+    subscription_services = models.TextField(verbose_name='Online Subscription Services', blank=True)
     other = models.TextField(verbose_name='Other', blank=True)
 
+    class Meta:
+      ordering = ['name']
     def __str__(self):
-        return 'Emergency Remote Access'
-
-# Create a single instance of the EmergencyRemoteAccess model to store the procedures
-EmergencyRemoteAccess.objects.create(
-    telephone_voice_mail='Include procedures for switching fax and phone numbers to the remote site.',
-    email='Specify how staff can access email remotely.',
-    intranet='Detail how staff can access the intranet remotely.',
-    library_website='Explain how the library website can be accessed from an alternate site.',
-    regional_library_network='Provide information on accessing the regional library network remotely.',
-    local_online_catalog='Describe how to access the local online catalog from an alternate location.',
-    online_subscription_services='Instructions for accessing online subscription services in an emergency.',
-    other='Any other procedures or services related to emergency remote access.'
-)
-
-# a model to represent the priority of administrative records
+        return self.name
+    
+class Contact(models.Model):
+    name = models.ForeignKey("Name", verbose_name=_("Contact Person"), on_delete=models.CASCADE)
+    phone = models.CharField(max_length=20, related_name='phone')
+    cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
+    pager = models.CharField(max_length=15, verbose_name='Pager', blank=True)
+    email = models.EmailField(_("Email"), max_length=100)
+   
+   de __str__(self):
+       return self.name
 class AdministrativeRecord(models.Model):
     PRIORITY_CHOICES = (
         (1, '1'),
@@ -782,7 +818,7 @@ class AdministrativeRecord(models.Model):
     def __str__(self):
         return f'Priority {self.priority_ranking} - {self.record_type}'
 
-#a model to represent the priority of bibliographic records
+
 class BibliographicRecord(models.Model):
     PRIORITY_CHOICES = (
         (1, '1'),
@@ -1039,7 +1075,7 @@ class CommandCenter(models.Model):
     def __str__(self):
         return f'Command Center: {self.command_center_location}'
 
-class CollectionStorageLocation(models.Model):
+class CollectionStorage(models.Model):
     LOCATION_CHOICES = (
         ('Within Building/Institution', 'Within Building/Institution'),
         ('Off-Site', 'Off-Site'),
@@ -1190,7 +1226,7 @@ class City(models.Model):
     
     class Meta:
         unique_together = ['city', 'state']
-            ordering = ['city']
+        ordering = ['city']
     def __str__(self):
         return self.city
              
