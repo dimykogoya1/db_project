@@ -15,7 +15,8 @@ class Institution(models.Model):
         
     def __str__(self):
         return self.name
-class address(models.Model):
+    
+class Address(models.Model):
     street=models.CharField("address"), (max_length=50)
     city=models.ForeignKey("city", on_delete=models.CASCADE, related_name"address")
     zip_code=models.CharField(_("Zip_code"), max_length=10)

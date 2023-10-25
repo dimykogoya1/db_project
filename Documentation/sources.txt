@@ -1,0 +1,6 @@
+https://docs.python.org/3/library/xml.etree.elementtree.html
+https://lxml.de/tutorial.html
+https://lxml.de/parsing.html
+https://lxml.de/lxmlhtml.html
+https://lxml.de/2.0/api.html
+https://lxml.de/parsing.html#parsing-html
