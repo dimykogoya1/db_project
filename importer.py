@@ -1,11 +1,11 @@
 import os
 from lxml import html
-from lxml import etree, html
-from io import StringIO
-# html directory to file
-REPORTS = "/Users/dimy/Documents/Fall Class 2023/dimykogoya1:Dproject/db_project/html"
+from xml.etree import ElementTree as ET
 
-def reader(doc=REPORTS):
+# Set the HTML file path
+REPORTS = "/Users/dimy/Documents/Fall Class 2023/dimykogoya1:Dproject/db_project/html/adams-public-library.html"
+
+def reader(doc):
     data = []
     for report in os.scandir(doc):
         data.append(report.path)
@@ -16,7 +16,7 @@ def read_html(file_path: str):
     with open(file_path, encoding="windows-1252") as file:
         return html.parse(file, parser)
 
-def file_reader(docs=REPORTS):
+def file_reader(docs):
     data = []
     for x in reader(doc=docs):
         data.append(read_html(x))
@@ -26,11 +26,11 @@ def extract_elements_from_html(file_path):
     with open(file_path, encoding="windows-1252") as file:
         tree = html.parse(file)
         root = tree.getroot()
-        # print for the link elements for institution class
+        # Print the link elements for the institution class
         links = root.xpath('//a')
         for link in links:
             print(link.text, link.get('href'))        
-        
+       
         # Extract and print specific elements from the HTML file
         h3_elements = root.xpath('//h3')
         div_elements = root.xpath('//div')
@@ -43,12 +43,12 @@ def extract_elements_from_html(file_path):
 
 def main():
     # Iterate through all HTML files in the directory
-    for filename in os.listdir(html_directory):
+    for filename in os.listdir(os.path.dirname(REPORTS)):
         if filename.endswith(".html"):
-            file_path = os.path.join(html_directory, filename)
+            file_path = os.path.join(os.path.dirname(REPORTS), filename)
             print("Extracting elements from:", file_path)
             extract_elements_from_html(file_path)
             print("\n")
 
-if __name__ == "__main":
+if __name__ == "__main__":
     main()
