@@ -184,11 +184,6 @@ class Colections(models.Model):
     
     
     
-    
-    
-    
-    
-    
 RISK_CHOICES = [
     (1, 'Must be addressed'),
     (2, 'Should be addressed'),
