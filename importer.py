@@ -36,14 +36,26 @@ def extract_elements_from_html(file_path):
             # Extract and print specific elements from the HTML file
             h3_elements = root.xpath('//h3')
             div_elements = root.xpath('//div')
-
+          
             for h3_element in h3_elements:
                 print("h3 Element:", h3_element.text)
-
             for div_element in div_elements:
                 print("div Element:", div_element.text)
+            for option in root.findall('.//option'):
+                value = option.get('value')
+                text = option.text
+                print (f'Value: {value}, Text: {text}')
+                # find and extract attribute by specific name
+            attribute_value=element.get('institution')
+            for attribute_value in attribute_values:
+                print("attributes: ", attribute_value)
+          
+                
+            
+            
     except Exception as e:
         print(f"Error while processing {file_path}: {e}")
+    
 
 def main():
     # Iterate through all HTML files in the directory
@@ -53,6 +65,8 @@ def main():
             print("Extracting elements from:", file_path)
             extract_elements_from_html(file_path)
             print("\n")
+
+    
 
 if __name__ == "__main__":
     main()
