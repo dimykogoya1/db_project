@@ -40,18 +40,59 @@ def extract_elements_from_html(file_path):
         data['address'] = extract_attribute(root, "input", "id", "institutionaddress1", "value")
         
         return data
-def extract_options_from_html(file_path):
-    tree= read_html(file_path)
+# def extract_options_from_html(file_path):
+#     tree= read_html(file_path)
+#     root = tree.getroot()
+    
+#     option_elements = root.xpath('//option')
+    
+#     options_data = []
+#     for option in option_elements:
+#         value = option.get('value')
+#         text = option.text
+#         options_data.append({'value': value, 'text': text if text else 'No Text'})
+#     return options_data
+def extract_institution_data(file_path):
+    tree = read_html(file_path)
     root = tree.getroot()
     
-    option_elements = root.xpath('//option')
+    data = {}
     
-    options_data = []
-    for option in option_elements:
-        value = option.get('value')
-        text = option.text
-        options_data.append({'value': value, 'text': text if text else 'No Text'})
-    return options_data
+    # Extract data for the institution
+    data['institution'] = root.xpath('//input[@name="institutionname"]/@value')
+    data['city'] = root.xpath('//input[@id="institutioncity"]/@value')
+    data['street'] = root.xpath('//input[@id="institutionstreet"]/@value')
+    data['zip_code'] = root.xpath('//input[@id="institutionzip"]/@value')
+    data['state'] = root.xpath('//input[@id="institutionstate"]/@value')
+    
+    
+    # contact info
+    data['home_phone'] = root.xpath('//input[@name="people:7:homephone"]/@value')
+    data['cell_phone'] = root.xpath('//input[@name="people:7:cellphone"]/@value')
+    data['pager_number'] = root.xpath('//input[@name="people:7:pagernumber"]/@value')
+    data['home_email'] = root.xpath('//input[@name="people:7:homeemail"]/@value')
+   
+
+    
+    # Check if data is found, if not, set it to 'Not Found'
+    for key, value in data.items():
+        data[key] = value[0] if value else 'Not Found'
+    
+    return data
+
+def main():
+    for filename in os.listdir(os.path.dirname(REPORTS)):
+        if filename.endswith(".html"):
+            file_path = os.path.join(os.path.dirname(REPORTS), filename)
+            print("Extracting data from:", file_path)
+            
+            institution_data = extract_institution_data(file_path)
+            
+            # Print the entire dictionary at once with formatting
+            print("Institution Data:")
+            for key, value in institution_data.items():
+                print(f"{key.capitalize()}: {value}")
+            print("\n")
 
             # # Print the link elements for the institution class
             # links = root.xpath('//a')
@@ -77,63 +118,19 @@ def extract_options_from_html(file_path):
             
             # mama = root.xpath("//input[@name='institutionaddress1']")[0]
             # delta1 =mama.get("value", "Not found")
-            # print("value",delta1)
-# ''' ''' libraries=[]        
-    
-# library_elements = xpath.findall("//*[@institurion='name']")
-# for library_elem in library_elems:
-#     library_data = {
-#         "library": library_elem.find('name').text,
-#         "Address": library_elem.find('address').text,
-#         "Street": library_elem.find('street').text,
-#         "City": library_elem.find('city').text,
-#         "zip_code": library_elem.find('zip_code').text,
-#         "State": library_elem.find('state').text
-#     }
-        
-#     try:  
-#         print(libary_elem) '''
-
-# institutions = []
-
-# institution_elements = root.xpath('//institution')
-
-# for institution_elem in institution_elements:
-#     institution_data = {}
-#     institution_data['name'] = institution_elem.findtext('name')
-#     institution_data['address'] = institution_elem.findtext('address')
-#     institution_data['city'] = institution_elem.findtext('city')
-#     institution_data['street'] = institution_elem.findtext('street')
-#     institution_data['zip_code'] = institution_elem.findtext('zip_code')
-#     institution_data['state'] = institution_elem.findtext('state')
-    
-# institutions.append(institution_data)
-
-# # Print the institution data
-# for institution in institutions:
-#     print("Name:", institution['name'])
-#     print("Address:", institution['address'])
-#     print("City:", institution['city'])
-#     print("Street:", institution['street'])
-#     print("Zip Code:", institution['zip_code'])
-#     print("State:", institution['state'])
-#     print()     
-      
-#except Exception as e:
-#print(f"Error while processing the XML file: {e}")   
-
-def main():
-    # Iterate through all HTML files in the directory
-    #libraries = []
-    options = []
-    for filename in os.listdir(os.path.dirname(REPORTS)):
-        if filename.endswith(".html"):
-            file_path = os.path.join(os.path.dirname(REPORTS), filename)
-            #print("Extracting elements from:", file_path)
-            #libraries.append(extract_elements_from_html(file_path))
-            options.extend(extract_options_from_html(file_path))
-            #print("\n")
-    print(options)
+            # print("value",delta1
+# def main():
+#     # Iterate through all HTML files in the directory
+#     #libraries = []
+#     options = []
+#     for filename in os.listdir(os.path.dirname(REPORTS)):
+#         if filename.endswith(".html"):
+#             file_path = os.path.join(os.path.dirname(REPORTS), filename)
+#             #print("Extracting elements from:", file_path)
+#             #libraries.append(extract_elements_from_html(file_path))
+#             options.extend(extract_options_from_html(file_path))
+#             #print("\n")
+#     print(options)
 
 if __name__ == "__main__":
     main()
