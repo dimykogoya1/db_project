@@ -40,6 +40,18 @@ def extract_elements_from_html(file_path):
         data['address'] = extract_attribute(root, "input", "id", "institutionaddress1", "value")
         
         return data
+def extract_options_from_html(file_path):
+    tree= read_html(file_path)
+    root = tree.getroot()
+    
+    option_elements = root.xpath('//option')
+    
+    options_data = []
+    for option in option_elements:
+        value = option.get('value')
+        text = option.text
+        options_data.append({'value': value, 'text': text if text else 'No Text'})
+    return options_data
 
             # # Print the link elements for the institution class
             # links = root.xpath('//a')
@@ -112,14 +124,16 @@ def extract_elements_from_html(file_path):
 
 def main():
     # Iterate through all HTML files in the directory
-    libraries = []
+    #libraries = []
+    options = []
     for filename in os.listdir(os.path.dirname(REPORTS)):
         if filename.endswith(".html"):
             file_path = os.path.join(os.path.dirname(REPORTS), filename)
             #print("Extracting elements from:", file_path)
-            libraries.append(extract_elements_from_html(file_path))
+            #libraries.append(extract_elements_from_html(file_path))
+            options.extend(extract_options_from_html(file_path))
             #print("\n")
-    print(libraries)
+    print(options)
 
 if __name__ == "__main__":
     main()
