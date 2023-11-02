@@ -103,4 +103,20 @@ for library_elem in library_elements:
 
     libraries.append(library_data)
     print(libraries)
+    
+    
+    
+    
+    # def extract_options_from_html(file_path):
+#     tree= read_html(file_path)
+#     root = tree.getroot()
+    
+#     option_elements = root.xpath('//option')
+    
+#     options_data = []
+#     for option in option_elements:
+#         value = option.get('value')
+#         text = option.text
+#         options_data.append({'value': value, 'text': text if text else 'No Text'})
+#     return options_data
 

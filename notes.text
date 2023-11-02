@@ -11,15 +11,22 @@ is that onother way to create model?
 
 
 step: 
-  -
-look at django -> 
-- extract the data option 
+  look at django -> 
+  extract the data option  
+look at the html file for attributs, name
+create-dictionary:
+  - institution name
+  - code -library
+  - address
+  - Municipality
+  - zip_code
 
 
 
 
-
-
+create a list dictionary with the libary data
+- process data into database
+- 
 
 
 

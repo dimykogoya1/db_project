@@ -178,12 +178,7 @@ class Colections(models.Model):
         return f"{self.name}"  
     
     
-    
-    
-    
-    
-    
-    
+
 RISK_CHOICES = [
     (1, 'Must be addressed'),
     (2, 'Should be addressed'),
