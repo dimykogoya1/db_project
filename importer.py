@@ -2,7 +2,7 @@ import os
 from lxml import html, etree
 from xml.etree import ElementTree as ET
 
-# Set the HTML file path
+
 REPORTS = "/Users/dimy/Documents/Fall Class 2023/dimykogoya1:Dproject/db_project/html"
 
 def reader(doc):
@@ -35,7 +35,7 @@ def extract_elements_from_html(file_path):
         root = tree.getroot()
     
         data = {}
-        data['entity'] = root.xpath('//input[@name="institutionname"]/@value')[0]
+        data['institution'] = root.xpath('//input[@id="institutionname"]/@value')[0]
         data['institution'] = root.xpath('//input[@id="institutionname"]/@value')[0]
         data['address'] = root.xpath('//input[@id="institutionaddress1"]/@value')[0]
         data['address2'] = root.xpath('//input[@id="institutionaddress2"]/@value')[0]
@@ -55,27 +55,27 @@ def extract_select_elements(file_path):
     data = city.iterchildren("option")
     first = next(data)
     
-    return first.text
+    return first.text, second.text
 
 def extract_elements(file_path):
     tree = read_html(file_path)
     root = tree.getroot()
-    
-    data =[]
-    data['contact'] = root.xpath('//input[@id="contactfirstname"]')[0]
-    data['contact'] = root.path('//input@id=" contactlastname"]')[0]
-    data['contact'] = root.path('//input@id=" contacttitle"]')[0]
-    data['contact'] = root.path('//input@id=" contactphone"]')[0]
-    data['contact'] = root.path('//input@id=" contactemail"]')[0]
-    data['contact'] = root.path('//input@id=" contactemailconfirmation"]')[0]
-    return data
-    
-                           
 
+    data = {}
+    data['contact_firstname'] = root.xpath('//input[@id="contactfirstname"]')[0]
+    data['contact_lastname'] = root.xpath('//input[@id="contactlastname"]')[0]
+    data['contact_title'] = root.xpath('//input[@id="contacttitle"]')[0]
+    data['contact_phone'] = root.xpath('//input[@id="contactphone"]')[0]
+    data['contact_email'] = root.xpath('//input[@id="contactemail"]')[0]
+    data['contact_email_confirmation'] = root.xpath('//input[@id="contactemailconfirmation"]')[0]
+    return data
+
+    
 def main():
     institution_addresses = []
     contact_info = []
     cities = []
+    
 
     for filename in os.scandir(REPORTS):
         if filename.name.endswith(".html"):
