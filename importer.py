@@ -28,27 +28,24 @@ def extract_attribute(element, tag, attribute, text, val):
     return alpha.get(val, "Not Found")
 
   
+
 def extract_elements_from_html(file_path):
-   
-     with open(file_path, encoding="windows-1252") as file:
-        tree = html.parse(file) #fromstring
-        #root = etree.fromstring(xml_content)
+    with open(file_path, encoding="windows-1252") as file:
+        tree = html.parse(file)
         root = tree.getroot()
-        
-        # create and dictionary for institution, city, state, code, zip_code
     
-        library = {} 
-        library['entity'] = root.xapth('//input[@attrb="something"]')[0].get('value', None)
-        libary['institution'] = root.xpath('//input[@id="institutionname"]/@value')[0]
-        libary['address'] = root.xpath('//input[@id="institutionaddress"]/@value')[0]
-        libary['code'] = root.xpath('//input[@id="instituticode"]/@value')[0]
-        libary['municipacity'] = root.xpath('//input[@id="institutionmunip"]/@value')[0]
-        libary['zip_code'] = root.xpath('//input[@id="institutionzip"]/@value')[0]
-        libary['state'] = root.xpath('//input[@id="institutionstate"]/@value')[0]
+        data = {}
+        data['entity'] = root.xpath('//input[@name="institutionname"]/@value')[0]
+        data['institution'] = root.xpath('//input[@id="institutionname"]/@value')[0]
+        data['address'] = root.xpath('//input[@id="institutionaddress1"]/@value')[0]
+        data['address2'] = root.xpath('//input[@id="institutionaddress2"]/@value')[0]
+        data['code'] = root.xpath('//input[@id="instituticode"]/@value')[0]
+        data['municipality'] = root.xpath('//input[@id="institutionmunip"]/@value')[0]
+        data['zip_code'] = root.xpath('//input[@id="institutionzip"]/@value')[0]
+        data['state'] = root.xpath('//input[@id="institutionstate"]/@value')[0]
               
-        return libary
-     
-     
+        return data
+
 def extract_select_elements(file_path):
     tree = read_html(file_path)
     root = tree.getroot()
@@ -59,127 +56,51 @@ def extract_select_elements(file_path):
     first = next(data)
     
     return first.text
-   
-def main():
-    for filename in os.scandir(REPORTS):
-        if filename.name.endswith(".html"):
-            file_path = filename.path
 
-def main():
+def extract_elements(file_path):
+    tree = read_html(file_path)
+    root = tree.getroot()
     
+    data =[]
+    data['contact'] = root.xpath('//input[@id="contactfirstname"]')[0]
+    data['contact'] = root.path('//input@id=" contactlastname"]')[0]
+    data['contact'] = root.path('//input@id=" contacttitle"]')[0]
+    data['contact'] = root.path('//input@id=" contactphone"]')[0]
+    data['contact'] = root.path('//input@id=" contactemail"]')[0]
+    data['contact'] = root.path('//input@id=" contactemailconfirmation"]')[0]
+    return data
+    
+                           
+
+def main():
+    institution_addresses = []
+    contact_info = []
+    cities = []
+
     for filename in os.scandir(REPORTS):
         if filename.name.endswith(".html"):
             file_path = filename.path
-            libaries.append(extract_select_elements(file_path))
+            print("Extracting data:", file_path)
 
-    for libary in selects:
-        print(libary)
+            institution_data = extract_elements_from_html(file_path)
+            institution_addresses.append(institution_data)
+
+            contact_data = extract_elements(file_path)
+            contact_info.append(contact_data)
+
+            city = extract_select_elements(file_path)
+            cities.append(city)
+
+  
+    for address in institution_addresses:
+        print(address)
+
+    for contact in contact_info:
+        print(contact)
+
+    
+    for city in cities:
+        print(city)
 
 if __name__ == "__main__":
     main()
-    
-    
-from project.models import Library, Address, Municipality
-
-demo = {
-    "library": "text",
-    "code": "text",
-    "address": "text",
-    "muncipality": "text",
-    "state": "text",
-    "zip_code": "text"
-}
-
-municipality_obj = Municipality.objects.get_or_create(
-    name=demo['muncipality'],
-    state=demo['state']
-)[0]
-
-address = Address.objects.get_or_create(
-    address=demo['address'],
-    municipality=municipality_obj,
-    zip_code=demo['zip_code']
-)[0]
-
-lib = Library.objects.filter(code=demo['code']).first()
-if not lib:
-    lib = Library.objects.create(
-        name=demo['library'],
-        code=demo['code'],
-        address=address
-    )
-
-data = [
-    {'libary','Libary'},
-    {'address','Address'},
-    {'code','Code'},
-    {'munipality','Municipality'},
-    {'zip_code', Zip_code},
-    {'state', 'State'}
-   
-]
-for data in range(data):
-    print(data)
-
-# create a list of dictionaries with 
-# student id as key and name as value
-data = [{7058: 'sravan', 7059: 'jyothika', 
-		7072: 'harsha', 7075: 'deepika'},
-		
-		{7051: 'fathima', 7089: 'mounika', 
-		7012: 'thanmai', 7115: 'vasavi'},
-		
-		{9001: 'ojaswi', 1289: 'daksha', 
-		7045: 'parvathi', 9815: 'bhavani'}]
-
-print(data)
-
-
-
-
-
-
-
-# Library.objects.all()
-    
-    
-
-# def main():
-#     for filename in os.scandir(REPORTS):
-#         if filename.name.endswith(".html"):
-#             file_path = filename.path
-#             print("Extracting data from:", file_path)
-            
-#             institution_data = extract_institution_data(file_path)
-            
-#             # Print the entire dictionary at once with formatting
-#             print("Institution Data:")
-#             # for key, value in institution_data.items():
-#             #     print(f"{key.capitalize()}: {value}")
-#             # print("\n")
-#             print(institution_data, "\n")
-
-#             # Print the link elements for the institution class
-#             links = root.xpath('//a')
-#             for link in links:
-#                 print(link.text, link.get('href'))        
-       
-#             # Extract and print specific elements from the HTML file
-#             h3_elements = root.xpath('//h3')
-#             div_elements = root.xpath('//div')
-          
-#             for h3_element in h3_elements:
-#                 print("h3 Element:", h3_element.text)
-#             for div_element in div_elements:
-#                 print("div Element:", div_element.text)
-#             for option in root.findall('.//option'):
-#                 value = option.get('value')
-#                 text = option.text
-#                 print (f'Value: {value}, Text: {text}')
-#                 # find and extract attribute by specific name
-#             gamma = root.xpath("//input[@name='institutionname']")[0]
-#             delta =gamma.get("value", "Not found")
-#             print("value",delta)
-            
-#             mama = root.xpath("//input[@name='institutionaddress1']")[0]
-#             delta1 =mama.get("value", "Not found")         # print("value",delta1

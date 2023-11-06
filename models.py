@@ -142,11 +142,7 @@ class Colections(models.Model):
      
      
      
-     
-     
-     
-     
-    loca
+    
     roof = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Roof')
     sky_lights = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Sky Lights')
     gutters_down_spouts = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Gutters/Downspouts')
@@ -1188,7 +1184,7 @@ class Contact(models.Model):
     pager_email =models.EmailField(max_length=100)(max_length=30, verbose_name='email address')
 
     def __str__(self):
-        return self f"{self.first_name} {self. last_name}"
+        return f"{self.first_name} {self.last_name}"
         
         
 class Organization(models.Model):
