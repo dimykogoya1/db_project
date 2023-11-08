@@ -1,4 +1,5 @@
 from project.models import Library, Address, Municipality, City
+from django.db import migrations
 
 # Create list of dicts
 demo_data_list = [

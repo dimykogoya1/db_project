@@ -27,22 +27,26 @@ def extract_attribute(element, tag, attribute, text, val):
     alpha = element.xpath(f"//{tag}[@{attribute}='{text}']")[0]
     return alpha.get(val, "Not Found")
 
-  
+def extract_municipality(root):
+    municipality = root.xpath('//p[@class="institutionmunicipality"]/@value')
+    if municipality:
+        return municipality[0]
+    else:
+        return "Municipality not found"
 
 def extract_elements_from_html(file_path):
     with open(file_path, encoding="windows-1252") as file:
-        tree = html.parse(file)
+        tree = read_html(file_path)
         root = tree.getroot()
-    
+
         data = {}
-        data['institution'] = root.xpath('//input[@id="institutionname"]/@value')[0]
-        data['institution'] = root.xpath('//input[@id="institutionname"]/@value')[0]
-        data['address'] = root.xpath('//input[@id="institutionaddress1"]/@value')[0]
-        data['address2'] = root.xpath('//input[@id="institutionaddress2"]/@value')[0]
+        data['institution'] = root.xpath('//input[@name="institutionname"]/@value')[0]
+        data['address'] = root.xpath('//input[@name="institutionaddress1"]/@value')[0]
+        data['address2'] = root.xpath('//input[@name="institutionaddress2"]/@value')[0]
         data['code'] = root.xpath('//input[@id="instituticode"]/@value')[0]
-        data['municipality'] = root.xpath('//input[@id="institutionmunip"]/@value')[0]
-        data['zip_code'] = root.xpath('//input[@id="institutionzip"]/@value')[0]
-        data['state'] = root.xpath('//input[@id="institutionstate"]/@value')[0]
+        data['municipality'] = extract_municipality(root)
+        data['zip_code'] = root.xpath('//input[@name="institutionzip"]/@value')[0]
+        data['state'] = root.xpath('//input[@name="institutionstate"]/@value')[0]
               
         return data
 
@@ -55,27 +59,10 @@ def extract_select_elements(file_path):
     data = city.iterchildren("option")
     first = next(data)
     
-    return first.text, second.text
+    return first.text
 
-def extract_elements(file_path):
-    tree = read_html(file_path)
-    root = tree.getroot()
-
-    data = {}
-    data['contact_firstname'] = root.xpath('//input[@id="contactfirstname"]')[0]
-    data['contact_lastname'] = root.xpath('//input[@id="contactlastname"]')[0]
-    data['contact_title'] = root.xpath('//input[@id="contacttitle"]')[0]
-    data['contact_phone'] = root.xpath('//input[@id="contactphone"]')[0]
-    data['contact_email'] = root.xpath('//input[@id="contactemail"]')[0]
-    data['contact_email_confirmation'] = root.xpath('//input[@id="contactemailconfirmation"]')[0]
-    return data
-
-    
 def main():
-    institution_addresses = []
-    contact_info = []
-    cities = []
-    
+    institution_data_list = []
 
     for filename in os.scandir(REPORTS):
         if filename.name.endswith(".html"):
@@ -83,24 +70,11 @@ def main():
             print("Extracting data:", file_path)
 
             institution_data = extract_elements_from_html(file_path)
-            institution_addresses.append(institution_data)
+            institution_data['city'] = extract_select_elements(file_path)
+            institution_data_list.append(institution_data)
 
-            contact_data = extract_elements(file_path)
-            contact_info.append(contact_data)
-
-            city = extract_select_elements(file_path)
-            cities.append(city)
-
-  
-    for address in institution_addresses:
-        print(address)
-
-    for contact in contact_info:
-        print(contact)
-
-    
-    for city in cities:
-        print(city)
+    for data in institution_data_list:
+        print(data)
 
 if __name__ == "__main__":
     main()

@@ -22,11 +22,22 @@ create-dictionary:
   - zip_code
 
 
-
 create a list dictionary with the libary data
 - process data into database
 - 
 
+What to do:
+Reinstall django https://docs.djangoproject.com/en/4.2/intro/install/ 
+Create the project and one application
+Move models file content to application/models.py
+Add your application to settings file 9under project folder)
+Run makemigrations
+Run migrate
 
+---
+Improve the basic data extraction
+- Use the functions you have available (municipality)
+- Bring the data together to a single dictionary
+- Create objects based on dictionary data, and store them in the database. 
 
 
