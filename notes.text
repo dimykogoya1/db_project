@@ -43,5 +43,6 @@ Improve the basic data extraction
 
 ## 11/9/23
 cd olis
+pip install -r requiriments.txt
 python manage.py makemigrations -> It will provide messages for all the errors in your code. Fix the errors and run it again until the process runs successfully. 
 python manage.py migrate 
