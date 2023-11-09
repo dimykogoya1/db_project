@@ -43,21 +43,16 @@ def extract_elements_from_html(file_path):
         data['institution'] = root.xpath('//input[@name="institutionname"]/@value')[0]
         data['address'] = root.xpath('//input[@name="institutionaddress1"]/@value')[0]
         data['address2'] = root.xpath('//input[@name="institutionaddress2"]/@value')[0]
-        data['code'] = root.xpath('//input[@id="instituticode"]/@value')[0]
+        data['code'] = root.xpath('//input[@name="instituticode"]/@value')[0]
         data['municipality'] = extract_municipality(root)
         data['zip_code'] = root.xpath('//input[@name="institutionzip"]/@value')[0]
         data['state'] = root.xpath('//input[@name="institutionstate"]/@value')[0]
-              
+
         return data
 
-def extract_select_elements(file_path):
-    tree = read_html(file_path)
-    root = tree.getroot()
-    
-    city = root.xpath("//select[@name='institutioncity']")[0]
-    
-    data = city.iterchildren("option")
-    first = next(data)
+        city = root.xpath("//select[@name='institutioncity']")[0]
+        data = city.iterchildren("option")
+        first = next(data)
     
     return first.text
 
@@ -69,12 +64,12 @@ def main():
             file_path = filename.path
             print("Extracting data:", file_path)
 
-            institution_data = extract_elements_from_html(file_path)
-            institution_data['city'] = extract_select_elements(file_path)
-            institution_data_list.append(institution_data)
+        institution_aata = extract_elements_from_thml(file_path)
+        institution_data['city'] = extract_select_elements(file_path)
+        institution_data_list.append(institution_data)
 
     for data in institution_data_list:
         print(data)
 
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()

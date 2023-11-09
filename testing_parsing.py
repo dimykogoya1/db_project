@@ -33,7 +33,9 @@
 #   To find elements by its specific atribute:
 #     elements = root.findall(".//*[@attribute_name='attribute_value']")
     
-    
+def extract_select_elements(file_path):
+    tree = read_html(file_path)
+    root = tree.getroot()
     
     
     
