@@ -1179,6 +1179,6 @@ class Address(models.Model):
     class Meta: 
         ordering = ['city']
     def __str__(self):
-        return self.city.ity
+        return self.city
         
         
