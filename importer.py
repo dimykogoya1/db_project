@@ -1,6 +1,6 @@
 import os
-from lxml import html, etree
-from xml.etree import ElementTree as ET
+from xml import html, etree
+from lxml.etree import ElementTree as ET
 
 
 REPORTS = "/Users/dimy/Documents/Fall Class 2023/dimykogoya1:Dproject/db_project/html"
