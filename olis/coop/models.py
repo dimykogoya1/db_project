@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+#You are still referencing the user model. The 'user-type' you are creating does not need an account to access the system.
 from enum import Enum, auto
 from django.forms import ModelForm
+# You are not using Forms yet, at least not under models.
 
 
 class Institution(models.Model):
@@ -17,8 +19,8 @@ class Institution(models.Model):
     
 class Address(models.Model):
     street=models.CharField(max_length=50, verbose_name="strett Name")
-    city=models.ForeignKey("City", on_delete=models.CASCADE, related_name="address")
-    zip_code=models.CharField("zip_code", max_length=10)
+    city=models.ForeignKey("City", on_delete=models.CASCADE, related_name="address") #usually, related name uses the plural of the referenced object.
+    zip_code=models.CharField("zip_code", max_length=10) #CharField has not attribute "zip_code". 
 
     class Meta:
         ordering =['street', 'zip_code']
@@ -27,7 +29,7 @@ class Address(models.Model):
       
 class City(models.Model):
     name = models.CharField("City", max_length=100)
-    state = models.DateField("state", default="RI")
+    state = models.DateField("state", default="RI") #Datefield for a two character Varchar/CharField?
     
     class Meta:
         unique_together = ['name', 'state']
@@ -37,7 +39,7 @@ class City(models.Model):
              return self.name
        
 class Position(models.Model):
-    name = models.CharField(max_length=50,unique=True)
+    name = models.CharField(max_length=50,unique=True) #You need to be consistent with your use of spaces. Two between classes, one between definitions. 
     class Meta:
         ordering=['name']
         
@@ -47,12 +49,12 @@ class Position(models.Model):
 class Contact(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="contact")
-    phone = models.CharField(default='', max_length=30)
+    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="contact") #Plural
+    phone = models.CharField(default='', max_length=30) #Empty defaults are not a good practice
     email = models.EmailField(blank=True, null=True)
       
     def __str__(self):
-        return self.name
+        return self.name # There is no name attribute. Were you trying to do something along the lines of f"{self.first_name} {self.last_name}"
     
 class Reporter(models.Model):
     name = models.CharField(max_length=150)
@@ -87,7 +89,8 @@ class Responsibilities(models.Model):
 
     responsibility = models.CharField(max_length=3, choices=TASK_CHOICES)
     def __str__(self):
-        return self.get_responsibility_display()
+        return self.get_responsibility_display()# get_responsability_display() is a funtion that works under the template (Jinja) not as part of the model.
+                                                # Also, you cannot call a function/helper without any reference, there is no attribute get_responsability_display() in the class.
     
 RISK_CHOICES = (
     (1, 'Must be addressed'),
@@ -97,7 +100,8 @@ RISK_CHOICES = (
 )
 class BaseMaterial(models.Model):
     name = models.CharField(max_length=50)
-    risk_level = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Risk Level')
+    risk_level = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Risk Level') #Again, defaults are a bad practice. Also, if you are adding verbose name to one attribute, you should add them to all.
+                                                                                                 #Also, the system automatically converts word_anotherword into Word Anotheword while displaying data through the template.
 
     class Meta:
         abstract = True
@@ -114,22 +118,23 @@ class ClimateControlRisk(models.Model):
     temperature_extremes = models.IntegerField(choices=RISK_CHOICES, verbose_name='Temperature Extremes')
     humidity_extremes = models.IntegerField(choices=RISK_CHOICES, verbose_name='Humidity Extremes')
     mold_infestation = models.IntegerField(choices=RISK_CHOICES, verbose_name='Mold Infestation')
-    collections = models.IntegerField(choices=RISK_CHOICES, verbose_name='Collections in Uncontrolled Areas')
+    collections = models.IntegerField(choices=RISK_CHOICES, verbose_name='Collections in Uncontrolled Areas') #This was a good use of verbose name
 
     def __str__(self):
-       return f'Climate Control Risk Assessment for {self.user.username}'
+       return f'Climate Control Risk Assessment for {self.user.username}' #This will retunr an error, as the class has not foreign keys, much less one to the User model (which you should not be using like this anyway.)
   
-class RiskLevel(models.TextChoices):
+class RiskLevel(models.TextChoices): # What is the difference between RiskLevel and RISK_CHOICES? (line 125 and line 94)
     MUST_BE_ADDRESSED = '1', 'Must be addressed'
     SHOULD_BE_ADDRESSED = '2', 'Should be addressed'
     COULD_BE_ADDRESSED = '3', 'Could be addressed'
     NOT_APPLICABLE = '4', 'Not applicable/no action needed'
+    #Were you trying to create tuples as the values? You can assign X,Z = 1, 2, but not X = 1,2
 
 class RiskAssessmentBase(models.Model):
     class Meta:
         abstract = True
 
-class RiskAssessment(models.Model):
+class RiskAssessment(models.Model): 
     risk_level = models.CharField(
         max_length=1,
         choices=RiskLevel.choices,
@@ -144,9 +149,16 @@ class RiskAssessmentMixin(models.Model):
         abstract = True
 
     def __str__(self):
-        return f'{self._meta.verbose_name} Risk Assessment for {self.user.username}'
+        return f'{self._meta.verbose_name} Risk Assessment for {self.user.username}' #Again, you are referencing a model you are not using.
 
-class SecurityRisk(RiskAssessmentBase, RiskAssessmentMixin):
+#While I appreciate the idea of trying to learn more about inheritance and mixins, code between lines 125-151 can be summarized into a single class.
+#class RiskAssesmentBase(models.Model):
+#    risk_level = models.CharField(max_length=1, choices=RISK_CHOICES)
+#
+#   class Meta:
+#        abstract = True
+
+class SecurityRisk(RiskAssessmentBase, RiskAssessmentMixin): #The following classes did not need the mixin, the choices was enough. Again, you are not providing a reference to the user model.
     automated_security_system = models.CharField(
         max_length=1,
         choices=RiskLevel.choices,
@@ -202,14 +214,14 @@ class BasePMTask(models.Model):
     def get_task_type(self):
         raise NotImplementedError("Subclasses must implement this method") """
 
-class DailyPMTask(BasePMTask):
+class DailyPMTask(BasePMTask): #The following classes have one problem. Are all the daily/weekly/monthly tasks performed/supervised by the same person? (lines 216-287)
     clean_restrooms = models.BooleanField(default=False)
     stack_maintenance = models.BooleanField(default=False)
     empty_garbage = models.BooleanField(default=False)
     shovel_snow = models.BooleanField(default=False)
     vacuum_floors = models.BooleanField(default=False)
 
-    @staticmethod
+    @staticmethod #What is the purpose of this? Daily what? 
     def daily():
         return 'Daily'
 
@@ -286,15 +298,16 @@ class ClosingStaffSchedule(models.Model):
         (7, 'Sunday'),
     ]
 
-    primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_closing_staff')
+    primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_closing_staff') #Again, you should not use the User model for this case scenario. 
     backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_closing_staff')
-    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, unique=True)
+    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, unique=True) #You cannot use unique here, otherwise only one person in the whole system would be assigned to a day.
 
     class Meta:
         verbose_name_plural = 'Closing Staff Schedule'
 
         def __str__(self):
-         return f'Closing Staff Schedule for {self.get_day_of_week_display()}'
+         return f'Closing Staff Schedule for {self.get_day_of_week_display()}' #Indentation is relevant. Also, you cannot reference the self object without an attribute. That only works as an argument, but
+                                                                               # call self.get_day_of... as there is no such attribute. Also, that helper works only with the template.
         
 class Question(models.Model):
   CATEGORY_CHOICES = [
@@ -310,21 +323,21 @@ class Question(models.Model):
 
 class Questionaire(models.Model): 
     institution = models.ForeignKey("Institution", on_delete=models.CASCADE, related_name="questionnaires")
-    question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="questionnaires")
-    primary = models.CharField(max_length=50, verbose_name="Primary Contact")
-    backup = models.CharField(max_length=50, verbose_name="Backup Contact")
+    question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="questionnaires") 
+    primary = models.CharField(max_length=50, verbose_name="Primary Contact") # Aren't you suppose to reference a model here? Not the User model, but something like Associate or Worker
+    backup = models.CharField(max_length=50, verbose_name="Backup Contact") #Same as above.
 
     def __str__(self):
-        return self.question.text
+        return self.question.text #Are you sure that's what you want displayed as the representation of the object?
     
 class Tasks(models.Model):
     institution_name = models.ForeignKey("Institution", verbose_name="Institution Name", on_delete=models.CASCADE, related_name="tasks")
     question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="tasks")
-    answer = models.BooleanField()
-    items = models.ForeignKey(User, on_delete=models.CASCADE, related_name='operating_procedures', null=True, blank=True)
+    answer = models.BooleanField() #Are these true/false questions?
+    items = models.ForeignKey(User, on_delete=models.CASCADE, related_name='operating_procedures', null=True, blank=True) #Users as items? 
 
     def __str__(self):
-        return str(self.institution_name)
+        return str(self.institution_name) #While possible, this looks like an illegal operation that might bring problems. 
 
   
 class WeeklyOpening(models.Model):
@@ -340,14 +353,14 @@ class WeeklyOpening(models.Model):
 
     primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_opening_staff', null=True, blank=True)
     backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_opening_staff', null=True, blank=True)
-    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, unique=True)
+    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, unique=True) #Since you already had a days of the week Choices, why the duplicate? Also, it cannot be unique. Reference the previous usage for more details.
 
     class Meta:
         verbose_name_plural = 'Weekly Opening Staff Schedules'
 
         def __str__(self):
-            return f'Weekly Opening Staff Schedule for {self.get_day_of_week_display()}'
-class FacilitiesInfo(models.Model):
+            return f'Weekly Opening Staff Schedule for {self.get_day_of_week_display()}' #Again, this is not how the display helper works. Also, this is a function of class Meta, not the WeeklyOpening class. Indentation matters.
+class FacilitiesInfo(models.Model): # Don't you already have an address model for this? 
     street = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=50)
 
@@ -372,7 +385,7 @@ class FireExtinguisherType(models.TextChoices):
     ABC = 'ABC', 'ABC'
     WATER = 'Water', 'Water'
     CO2 = 'CO2', 'CO2'
-    MIST = 'Mist', 'Mist'
+    MIST = 'Mist', 'Mist' #Again, this is now how tuples work. 
 
 class FireDetection(models.Model):
     fire_alarm_pull_box_number = models.CharField(max_length=255, verbose_name='Fire Alarm Pull Box Number/Name')
@@ -860,7 +873,7 @@ class CollectionStorage(models.Model):
 
 class DryingSpace(models.Model):
     LOCATION_CHOICES = (
-        ('Within Building/Institution', 'Within Building/Institution'),
+        ('Within Building/', 'Within Building/'),
         ('Off-Site', 'Off-Site'),
     )
 
