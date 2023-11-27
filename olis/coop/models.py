@@ -389,7 +389,7 @@ class FireExtinguisherType(models.TextChoices):
 
 class FireDetection(models.Model):
     fire_alarm_pull_box_number = models.CharField(max_length=255, verbose_name='Fire Alarm Pull Box Number/Name')
-    fire_alarm_box_location = models.TextField(verbose_name='Location Description')
+    fire_alarm_box_location = models.TextField(verbose_name='Location Description') #How about using a reference to the next model? 
 
     fire_extinguisher_type = models.CharField(
         max_length=200,
@@ -413,7 +413,8 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-class Companies(models.Model):
+class Companies(models.Model): #I would make the name of the class singular, and then add in class Meta the plural option. 
+    # Do comapnies need a name?
     heat_detectors = models.CharField(max_length=50)
     smoke_detectors = models.CharField(max_length=50)
     sprinklers = models.CharField(max_length=50, verbose_name='Sprinklers System')
@@ -423,13 +424,13 @@ class Companies(models.Model):
         ordering = ['location']
 
     def __str__(self):
-        return str(self.location)
+        return str(self.location)  # Are you sure you want to reference companies by location?
 
 class ServiceType(models.Model):
     date_created = models.DateField()
     date_updated = models.DateField()
     description = models.CharField(max_length=300)
-    monitoring_type = models.CharField(max_length=100, verbose_name='Monitoring Type')
+    monitoring_type = models.CharField(max_length=100, verbose_name='Monitoring Type') #No controlled vocabulary for this?
 
     def __str__(self):
         return f"{self.description} ({self.monitoring_type})"
@@ -446,11 +447,11 @@ class Services(models.Model):
     def __str__(self):
         return str(self.contact_person)
 
-class GasServices(models.Model):
-    service_category = models.CharField(max_length=100)
+class GasServices(models.Model): #On a second look, it appear this model is a mixture of Service Type and Services? Why are you duplicating efforts?
+    service_category = models.CharField(max_length=100) # Service type?
     date_created = models.DateField(blank=True, null=True)
     date_updated = models.DateField(blank=True, null=True)
-    description = models.CharField(max_length=250, verbose_name='Emergency Evacuation Plans')
+    description = models.CharField(max_length=250, verbose_name='Emergency Evacuation Plans') #The first four attributes are present in Service Type, maybe use inheritance instead?
     addresses = models.ManyToManyField("Address", related_name='gas_services_addresses')
     phone = models.CharField(max_length=20, verbose_name='Phone')
     after_hours = models.CharField(max_length=20, verbose_name='After Hours Phone')
@@ -460,7 +461,7 @@ class GasServices(models.Model):
     def __str__(self):
         return f"{self.service_category} {', '.join(map(str, self.addresses.all()))}"
 
-class WaterDetector(models.Model):
+class WaterDetector(models.Model): #You have a Location model and a Street model. You need to define which one you want to use. Consistency is important.
     name = models.CharField(max_length=150, verbose_name="Detector Name")
     location = models.CharField(max_length=50, verbose_name="Location")
     street = models.ForeignKey("Address", related_name="wd_address", on_delete=models.CASCADE)
@@ -474,7 +475,7 @@ class WaterDetector(models.Model):
 
 class WaterDetectorCategory(models.Model):
     text = models.CharField(max_length=200, verbose_name="Text")
-    detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
+    detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector') # No controlled vocabulary for a'type' item?
     water_detector = models.ForeignKey("WaterDetector", verbose_name='Water Detector', on_delete=models.CASCADE, default=1)
     monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
 
@@ -483,7 +484,7 @@ class WaterDetectorCategory(models.Model):
 
 
 class State(models.Model):
-    name = models.CharField(max_length=150, verbose_name='State Name')
+    name = models.CharField(max_length=150, verbose_name='State Name') #Is this what you are referencing on Address?
 
     def __str__(self):
         return self.name
@@ -501,7 +502,7 @@ class HeatingCompany(models.Model):
         return str(self.material)
 
 
-class Name(models.Model):
+class Name(models.Model): # What is name being used for? It could be great for companies that have more than one function. 
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
@@ -510,13 +511,13 @@ class Name(models.Model):
     
 class CoolingSystem(models.Model):
     name = models.CharField(max_length=50, verbose_name="Organization Name")
-    city = models.ForeignKey("City", on_delete=models.CASCADE, related_name="city")
+    city = models.ForeignKey("City", on_delete=models.CASCADE, related_name="city") #Just city, no address?
 
     class Meta:
         ordering = ['name']
 
     def __str__(self):
-        return self.name
+        return self.name #While I have skipped a few of these, self.name does not always return a string. Using "f" strings is usally the safest bet. 
     
 class DisasterTeam(models.Model):
     ROLE_CHOICES = [
@@ -525,9 +526,9 @@ class DisasterTeam(models.Model):
         ('Backup 2', 'Backup 2'),
     ]
 
-    name = models.CharField(max_length=150, verbose_name='Name')
+    name = models.CharField(max_length=150, verbose_name='Name') #Are you referencing a team member? or the Team? Either wat, this should be a foreign key. 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name='Role')
-    contact_phone = models.CharField(max_length=30, verbose_name='Phone')
+    contact_phone = models.CharField(max_length=30, verbose_name='Phone') #You could avoid much of the following attributes if you were referencing a person (not from the User model)
     contact_cell_phone = models.CharField(max_length=20, verbose_name='Cell Phone', blank=True)
     contact_after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone', blank=True)
     contact_email = models.EmailField(verbose_name='Email', blank=True)
@@ -557,16 +558,17 @@ class TeamResponsibility(models.Model):
     name = models.ForeignKey("Name", on_delete=models.CASCADE, related_name='team_responsibilities')
     responsibility = models.IntegerField(choices=RESPONSIBILITY_CHOICES, verbose_name='Responsibility')
     team_member = models.ForeignKey("TeamName", on_delete=models.CASCADE, related_name='team_member_responsibilities')
+    #Are you should the above are the correct relationships? TeamName is a single line, while DisasterTeam is a much more complex object. 
 
     def __str__(self):
         return f'{self.get_responsibility_display()} - {self.team_member.name}'
     
-class DisasterResponseTeamMember(models.Model):
+class DisasterResponseTeamMember(models.Model): #Wait! Another class for team members? 
     ROLE_CHOICES = [
         ('Leader', 'Leader'),
         ('Coordinator', 'Coordinator'),
         ('Member', 'Member'),
-    ]
+    ] #Consistence for readability purposes is also important. You are using different ways to approach the same problem. Stick to one. 
 
     name = models.CharField(max_length=150, verbose_name='Name')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name='Role')
@@ -591,12 +593,12 @@ class DataBackup(models.Model):
     person_backup = models.ForeignKey('DisasterResponseTeamMember', on_delete=models.CASCADE, related_name='data_backups')
     on_site_backup = models.CharField(max_length=150, verbose_name='On-site Location of Backup', blank=True)
     off_site_location = models.CharField(max_length=150, verbose_name='Off-site Location of Backup', blank=True)
-    frequency = models.CharField(max_length=50, verbose_name='Frequency of Backup', blank=True)
+    frequency = models.CharField(max_length=50, verbose_name='Frequency of Backup', blank=True) # is this frequency measured as daily, weekly, monthly, etc? If so, it should be a controlled vocabulary (enum)
 
     def __str__(self):
         return f'{self.type_of_data} - {self.location_of_data}'
 
-class CommonFields(models.Model):
+class CommonFields(models.Model): #Common fields? As in miscellaneous? Many of the attributes listed below are already present in other classes. 
     staff_person = models.ForeignKey("DisasterResponseTeamMember", on_delete=models.CASCADE, verbose_name='Staff Person')
     outside_organization = models.CharField(max_length=150, verbose_name='Organization', blank=True)
     title_or_contact = models.CharField(max_length=150, verbose_name='Title/Contact', blank=True)
@@ -611,7 +613,7 @@ class CommonFields(models.Model):
     class Meta:
         abstract = True
 
-class DataRestoration(CommonFields):
+class DataRestoration(CommonFields): #Since this and the following model referer to organizations, wouldn't it be easier to use a foreign key to the company?
     outside_organization = models.CharField(max_length=150, verbose_name='Organization', blank=True)
 
     def __str__(self):
@@ -623,7 +625,7 @@ class Reconfiguration(CommonFields):
     def __str__(self):
         return f'{self.staff_person.name} - {self.outside_organization}'
 
-class ComputerOperation(models.Model):
+class ComputerOperation(models.Model): #How are all of this tasks relate other than they are computer related? 
     OPERATION_CATEGORIES = [
         ('OR', 'Computer Operation Relocation'),
         ('ERA', 'Emergency Remote Access'),
@@ -660,12 +662,12 @@ class AdministrativeRecord(models.Model):
     record_type = models.CharField(max_length=150, verbose_name='Type of Record Group')
 
     class Meta:
-        ordering = ['priority_ranking']
+        ordering = ['priority_ranking'] #sort based on priority? 
 
     def __str__(self):
         return f'{self.get_priority_ranking_display()} - {self.record_type}'
 
-class PriorityMixin(models.Model):
+class PriorityMixin(models.Model): #I am not quite sure what you were trying to do here. Is this supposed to be a reference to the previous model?
     priority_ranking = models.PositiveIntegerField(verbose_name='Priority Ranking')
 
     class Meta:
@@ -679,7 +681,7 @@ class Department(PriorityMixin):
 
 class Collection(PriorityMixin):
     department = models.ForeignKey("Department", on_delete=models.CASCADE, related_name='collections')
-    name = models.CharField(max_length=150, verbose_name='Collection Name')
+    name = models.CharField(max_length=150, verbose_name='Collection Name') #Again, this model could benefit with some foreign keys in the base mixin model.
     location = models.CharField(max_length=300, verbose_name='Location floor')
 
     def __str__(self):
@@ -701,7 +703,7 @@ class OverallSalvagePriority(PriorityMixin):
 class BuildingPlan(models.Model):
     name = models.CharField(max_length=500, verbose_name='Plan Name')
     description = models.TextField(verbose_name='Plan Description')
-    color_code = models.CharField(max_length=20, verbose_name='Color Code')
+    color_code = models.CharField(max_length=20, verbose_name='Color Code') #Are these color codes referenced elsewhere? Should be limited to a set?
 
     def __str__(self):
         return self.name
@@ -716,31 +718,31 @@ class InsuranceInformation(models.Model):
         (BUILDING, 'Building'),
         (MACHINERY, 'Machinery'),
         (EQUIPMENT, 'Equipment'),
-    ]
+    ] #Two different ways to approach a problem in the same model. You need to select one. 
 
     policy_number = models.CharField(max_length=50, verbose_name='Policy Number')
     policy_inception_date = models.DateField(verbose_name='Policy Inception Date')
     policy_expiration_date = models.DateField(verbose_name='Policy Expiration Date')
-    property_covered = models.CharField(max_length=20, choices=PROPERTY_CHOICES, verbose_name='Property Covered')
+    property_covered = models.CharField(max_length=20, choices=PROPERTY_CHOICES, verbose_name='Property Covered') #Probably a reference to the library. 
     amount_of_coverage = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Coverage')
     deductible = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Amount of Deductible', null=True, blank=True)
 
     def __str__(self):
-        return f'Policy: {self.policy_number}, Property: {self.get_property_covered_display()}'
+        return f'Policy: {self.policy_number}, Property: {self.get_property_covered_display()}' 
 
 
-class InsuranceCompany(models.Model):
+class InsuranceCompany(models.Model): #Isn't this just a company? 
     address1 = models.CharField(max_length=150, verbose_name='Address1')
     address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     city = models.ForeignKey("City", on_delete=models.CASCADE, verbose_name='City')
 
     class Meta:
-        ordering = ['city']
+        ordering = ['city'] #Foreign Keys should be use rarely to order the values of a model.
 
     def __str__(self):
         return self.city
     
-class Inventories(models.Model):
+class Inventories(models.Model): # Why do inventories have almost the same data as insurance information? 
     policy_number = models.CharField(max_length=50, verbose_name='Policy Number')
     inception_date = models.DateField(verbose_name='Policy Inception Date')
     expiration_date = models.DateField(verbose_name='Policy Expiration Date')
@@ -755,7 +757,7 @@ class Inventories(models.Model):
     def __str__(self):
         return self.policy_number
 
-class ExpensesInsurance(models.Model):
+class ExpensesInsurance(models.Model): #Again, very clear some of the same attributes from the previous model. 
     policy_number = models.CharField(max_length=50, verbose_name='Policy Number')
     inception_date = models.DateField(verbose_name='Policy Inception Date')
     expiration_date = models.DateField(verbose_name='Policy Expiration Date')
@@ -779,15 +781,15 @@ class InsuranceType(models.Model):
 
     def __str__(self):
         return self.name
-     
-RESPONSIBILITY_CHOICES = (
+      
+RESPONSIBILITY_CHOICES = ( #How do you know who's who?
     ('person_1', 'Person 1'),
     ('person_2', 'Person 2'),
     ('backup_1', 'Backup #1'),
     ('backup_2', 'Backup #2'),
 )
 
-FREQUENCY_CHOICES = (
+FREQUENCY_CHOICES = ( #You coyld've use these before. 
     ('daily', 'Daily'),
     ('weekly', 'Weekly'),
     ('monthly', 'Monthly'),
@@ -796,7 +798,7 @@ FREQUENCY_CHOICES = (
 
 class InsuranceCoverage(models.Model):
     funds = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Funds Available for Salvage, Repair (in dollars)')
-    collections = models.TextField(verbose_name='Collections Appraised')
+    collections = models.TextField(verbose_name='Collections Appraised') #Should you reference a collection here? Or are they only named once?
     date_of_last = models.DateField(verbose_name='Date of Last Appraisal')
     conducting = models.CharField(max_length=150, verbose_name='Person Conducting Appraisal')
     responsible = models.CharField(max_length=150, verbose_name='Person Responsible', choices=RESPONSIBILITY_CHOICES)
@@ -805,19 +807,19 @@ class InsuranceCoverage(models.Model):
     documentation = models.TextField(verbose_name='Documentation Required')
 
     def __str__(self):
-        return f'Funds Available: ${self.funds}'
+        return f'Funds Available: ${self.funds}' #funds but not what the insurance is covering?
 
 class EvacuationProcedure(models.Model):
     area_or_floor = models.CharField(max_length=150, verbose_name='Area/Floor')
-    person_responsible = models.CharField(max_length=150, verbose_name='Person Responsible for Clearing Area', choices=RESPONSIBILITY_CHOICES)
-    backup_1 = models.CharField(max_length=150, verbose_name='Backup #1', choices=RESPONSIBILITY_CHOICES)
+    person_responsible = models.CharField(max_length=150, verbose_name='Person Responsible for Clearing Area', choices=RESPONSIBILITY_CHOICES) # Should be referencing a person
+    backup_1 = models.CharField(max_length=150, verbose_name='Backup #1', choices=RESPONSIBILITY_CHOICES) # Again, should be referencing a person. 
     backup_2 = models.CharField(max_length=150, verbose_name='Backup #2', choices=RESPONSIBILITY_CHOICES)
     evacuation_procedures = models.TextField(verbose_name='Evacuation procedure')
 
     def __str__(self):
         return f'Evacuation Area: {self.area_or_floor}'
 
-class StaffVisitorLog(models.Model):
+class StaffVisitorLog(models.Model): #You should be referencing already existing models here (foreign keys)
     area_or_floor = models.CharField(max_length=300, verbose_name='Area/Floor')
     person_responsible = models.CharField(max_length=150, verbose_name='Person Responsible for List', choices=RESPONSIBILITY_CHOICES)
     backup_1 = models.CharField(max_length=150, verbose_name='Backup #1', choices=RESPONSIBILITY_CHOICES)
@@ -826,7 +828,7 @@ class StaffVisitorLog(models.Model):
     def __str__(self):
         return f'Staff/Visitor Log for {self.area_or_floor}'
 
-class AssemblyArea(models.Model):
+class AssemblyArea(models.Model): #Same as above. area or floor, backup, and location should be foreign keys. 
     area_or_floor = models.CharField(max_length=150, verbose_name='Area/Floor')
     staff_member_in_charge = models.CharField(max_length=150, verbose_name='Staff Member')
     backup_1 = models.CharField(max_length=150, verbose_name='Backup #1')
@@ -836,16 +838,16 @@ class AssemblyArea(models.Model):
     def __str__(self):
         return f'Assembly Area: {self.area_or_floor}'
 
-class EmergencyCallList(models.Model):
+class EmergencyCallList(models.Model): #Staff member should be a reference to person/associate/worker or similar but not User.
     staff_member = models.CharField(max_length=150, verbose_name='Staff Member')
-    estimated_response_time = models.CharField(max_length=50, verbose_name='Estimated Response Time')
+    estimated_response_time = models.CharField(max_length=50, verbose_name='Estimated Response Time') #Should time be an integer or a float at least? Or maybe two fields? Time and Unit?
     position_on_call_list = models.PositiveIntegerField(verbose_name='Position on Call List')
 
     def __str__(self):
         return self.staff_member
 
 
-class CommandCenter(models.Model):
+class CommandCenter(models.Model): #Maybe use the address model to reference content?
     command_center_location = models.CharField(max_length=300, verbose_name='Command Center Location')
     alternate_location_1 = models.CharField(max_length=300, verbose_name='Alternate Location #1')
     alternate_location_2 = models.CharField(max_length=300, verbose_name='Alternate Location #2 (Off-site)')
@@ -853,16 +855,16 @@ class CommandCenter(models.Model):
     def __str__(self):
         return f'Command Center: {self.command_center_location}'
 
-class CollectionStorage(models.Model):
+class CollectionStorage(models.Model): #Collection storage but not indicating the collections being stored?
     LOCATION_CHOICES = (
         ('Within Building/Institution', 'Within Building/Institution'),
         ('Off-Site', 'Off-Site'),
     )
 
     location_type = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name='Location Type')
-    location = models.CharField(max_length=300, verbose_name='Location')
+    location = models.CharField(max_length=300, verbose_name='Location') #reference to a company? Institution? Library?
     space_available = models.CharField(max_length=150, verbose_name='Space Available')
-    contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person') #reference
     phone = models.CharField(max_length=15, verbose_name='Phone')
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone')
     after_hours_phone = models.CharField(max_length=15, verbose_name='After-Hours Phone')
@@ -871,7 +873,7 @@ class CollectionStorage(models.Model):
     def __str__(self):
         return f'{self.location_type} - {self.location}'
 
-class DryingSpace(models.Model):
+class DryingSpace(models.Model): #Maybe this and the above models could be one and define its purpose as an attribute?
     LOCATION_CHOICES = (
         ('Within Building/', 'Within Building/'),
         ('Off-Site', 'Off-Site'),
@@ -889,7 +891,7 @@ class DryingSpace(models.Model):
         return f'{self.location_type} - {self.space_available}'
 
         
-class Organization(models.Model):
+class Organization(models.Model): #This model could use company as reference and determine the role of the company. Much easier.
     CATEGORIES_CHOICES = [
         ('PD', 'Police Department'),
         ('EM', 'Emergency Management'),
@@ -911,20 +913,21 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
-class MaterialsService(models.Model):
+class MaterialsService(models.Model): #Similar to the above, it could use a reference to organization with minor changes.
     name = models.CharField(max_length=50, verbose_name="Service")
     backup = models.CharField(max_length=50, verbose_name="Backup Liaison")
     date = models.DateField(auto_now=False, auto_now_add=False)
-    review_date = models.DateField(auto_now=False, auto_now_add=False, verbose_name='Date Review of Collection Priorities')
+    review_date = models.DateField(auto_now=False, auto_now_add=False, verbose_name='Date Review of Collection Priorities') #auto_now and auto_now_add are false by default, no need to include them if that's the case.
     inspection_date = models.DateField(verbose_name='Date of Last Inspection by Fire Marshal')
-    contact_person = models.CharField(max_length=150, verbose_name='Contact Person within Fire Department')
+    contact_person = models.CharField(max_length=150, verbose_name='Contact Person within Fire Department') 
   
 
     def __str__(self):
         return f'{self.name} - {self.organization}'
 
 
-class NonOrganization(models.Model):
+class NonOrganization(models.Model): #Again, company and role. Also, not all companies do everything. Also, the models is providing maintanance with the role of maitenance. 
+                                    # Either that, or a plumber that can work as an electrician. It makes no sense. 
     MAINTENANCE_CHOICES = (
         ("maintenance", "Maintenance"),
         ("utilities", "Utilities"),
@@ -947,7 +950,7 @@ class NonOrganization(models.Model):
     def __str__(self):
         return f"Organization {self.id}"
      
-class OrganizationM(models.Model):
+class OrganizationM(models.Model): #Ok, this could work with some additiona, but it is not referenced. 
     CATEGORIES_CHOICES = [
         ('CE', 'Computer Emergency'),
         ('O', 'Organization'),
