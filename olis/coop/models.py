@@ -7,7 +7,7 @@ from django.forms import ModelForm
 class Institution(models.Model):
     name = models.CharField(max_length=40)
     code= models.CharField(max_length=3)
-    address=models.ForeignKey("Addresse", on_delete=models.CASCADE, related_name="institution")
+    address=models.ForeignKey("Address", on_delete=models.CASCADE, related_name="institution")
     
     class Meta:
         ordering = ['name','code']
@@ -20,10 +20,10 @@ class Address(models.Model):
     city=models.ForeignKey("City", on_delete=models.CASCADE, related_name="address")
     zip_code=models.CharField("zip_code", max_length=10)
 
-class Meta:
-    ordering =['street', 'zip_code']
+    class Meta:
+        ordering =['street', 'zip_code']
     def __str__(self):
-          return f"{self.street} {self.city.name}, {self.city.state} {self.zip_code}"
+        return f"{self.street} {self.city.name}, {self.city.state} {self.zip_code}"
       
 class City(models.Model):
     name = models.CharField("City", max_length=100)
@@ -309,22 +309,23 @@ class Question(models.Model):
       return self.text
 
 class Questionaire(models.Model): 
-  institution = models.ForeignKey("Institution", on_delete=models.CASCADE, related_name="tasks")
-  question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="qs")
-  primary = models.ForeignKey("Contact1", on_delete=models.CASCADE, related_name="primary_responsabilities")
-  backup = models.ForeignKey("Contact2", on_delete=models.CASCADE, related_name="secondary_responsabilities")
-  
-  def __str__(self):
-    return self.question.text
+    institution = models.ForeignKey("Institution", on_delete=models.CASCADE, related_name="questionnaires")
+    question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="questionnaires")
+    primary = models.CharField(max_length=50, verbose_name="Primary Contact")
+    backup = models.CharField(max_length=50, verbose_name="Backup Contact")
+
+    def __str__(self):
+        return self.question.text
     
 class Tasks(models.Model):
-  name = models.ForeignKey("Institution", verbose_name="Institution Name", on_delete=models.CASCADE)
-  question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="qs")
-  answer = models.BooleanField()
-  items =  models.ForeignKey(User, on_delete=models.CASCADE, related_name='Operating procedure', null=True, blank=True)
+    institution_name = models.ForeignKey("Institution", verbose_name="Institution Name", on_delete=models.CASCADE, related_name="tasks")
+    question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="tasks")
+    answer = models.BooleanField()
+    items = models.ForeignKey(User, on_delete=models.CASCADE, related_name='operating_procedures', null=True, blank=True)
 
-  def __str__(self):
-      return self.name
+    def __str__(self):
+        return str(self.institution_name)
+
   
 class WeeklyOpening(models.Model):
     DAYS_OF_WEEK = [
@@ -346,19 +347,16 @@ class WeeklyOpening(models.Model):
 
         def __str__(self):
             return f'Weekly Opening Staff Schedule for {self.get_day_of_week_display()}'
-    
 class FacilitiesInfo(models.Model):
-        name = models.ForeignKey("Location", on_delete=models.CASCADE, related_name="Facilitties")
-        street = models.CharField(max_length=50)
-        zip_code =models.CharField(max_length=50)
+    street = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=50)
 
-        def __str__(self):
-            return f"{self.name}"
+    def __str__(self):
+        return f"{self.name}"
 
 class EmergencyShutOff(models.Model):
-    facility_info = models.ForeignKey("FacilitiesInformation", on_delete=models.CASCADE, related_name='facilities_information')
+    facility_info = models.ForeignKey("FacilitiesInfo", on_delete=models.CASCADE, related_name='emergency_shut_offs')
     shut_off_type = models.CharField(max_length=300, verbose_name='Emergency Shut-Off Type')
-    location = models.ForeignKey("location",on_delete=models.CASCADE, related_name='Location Description')
     procedures = models.TextField(verbose_name='Procedures')
 
     class Meta:
@@ -366,6 +364,8 @@ class EmergencyShutOff(models.Model):
 
     def __str__(self):
         return f'Emergency Shut-Off for {self.shut_off_type}'
+
+
 
 
 class FireExtinguisherType(models.TextChoices):
@@ -401,93 +401,74 @@ class Location(models.Model):
         return self.name
 
 class Companies(models.Model):
-    name = models.ForeignKey("Name", verbose_name="Company Name", on_delete=models.CASCADE)
     heat_detectors = models.CharField(max_length=50)
     smoke_detectors = models.CharField(max_length=50)
     sprinklers = models.CharField(max_length=50, verbose_name='Sprinklers System')
     location = models.ForeignKey("Location", on_delete=models.CASCADE, related_name="locations")
 
     class Meta:
-        ordering = ['name']
+        ordering = ['location']
 
     def __str__(self):
-        return str(self.name)
+        return str(self.location)
 
 class ServiceType(models.Model):
-    name = models.ForeignKey("Type", related_name="type of_ service", on_delete=models.CASCADE)
     date_created = models.DateField()
     date_updated = models.DateField()
     description = models.CharField(max_length=300)
     monitoring_type = models.CharField(max_length=100, verbose_name='Monitoring Type')
 
     def __str__(self):
-        return f"{self.name} {self.date_created} {self.description}"
+        return f"{self.description} ({self.monitoring_type})"
+
 
 class Services(models.Model):
-    name = models.ForeignKey("Companies", related_name="Company", on_delete=models.CASCADE)
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
-    addresses = models.ManyToManyField("Address", related_name='companies')
+    addresses = models.ManyToManyField("Address", related_name='services_companies')
     phone = models.CharField(max_length=30, verbose_name='Phone Number')
     after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=20, verbose_name='Pager')
     email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
-        return str(self.name)
+        return str(self.contact_person)
 
-class GasCompanies(models.Model):
-    name = models.ForeignKey("company",related_name="gas_company", on_delete=models.CASCADE)
-    addresses = models.ManyToManyField("Address",related_name="address")
-    
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return str(self.name)
-
-class ServiceCategory(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Category Name")
-    location = models.ForeignKey(Location, related_name="location", on_delete=models.CASCADE)
-    services = models.CharField(max_length=100, verbose_name="Services")
-
-    def __str__(self):
-        return str(self.name)
-
-class Services(models.Model):
-    name = models.ForeignKey("Services", related_name="Service", on_delete=models.CASCADE)
+class GasServices(models.Model):
+    service_category = models.CharField(max_length=100)
     date_created = models.DateField(blank=True, null=True)
     date_updated = models.DateField(blank=True, null=True)
     description = models.CharField(max_length=250, verbose_name='Emergency Evacuation Plans')
-    addresses = models.ManyToManyField(Address, related_name='companies')
+    addresses = models.ManyToManyField("Address", related_name='gas_services_addresses')
     phone = models.CharField(max_length=20, verbose_name='Phone')
     after_hours = models.CharField(max_length=20, verbose_name='After Hours Phone')
     pager = models.CharField(max_length=20, verbose_name='Pager')
     email = models.EmailField(max_length=150, verbose_name='Email')
 
     def __str__(self):
-        return f"{self.name} {', '.join(map(str, self.addresses.all()))}"
+        return f"{self.service_category} {', '.join(map(str, self.addresses.all()))}"
 
 class WaterDetector(models.Model):
-    name = models.ForeignKey("Department", related_name="water_detection", on_delete=models.CASCADE)
+    name = models.CharField(max_length=150, verbose_name="Detector Name")
     location = models.CharField(max_length=50, verbose_name="Location")
-    #city = models.ForeignKey("City",on_delete=models.CASCADE, related_name="City")
     street = models.ForeignKey("Address", related_name="wd_address", on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['name']
+    
     def __str__(self):
-        return f'Water Detector at {self.location}'
+        return self.name
+
 
 class WaterDetectorCategory(models.Model):
     text = models.CharField(max_length=200, verbose_name="Text")
     detector_type = models.CharField(max_length=150, verbose_name='Type of Water Detector')
-    location = models.ForeignKey("Location",verbose_name='Location', on_delete=models.CASCADE)
+    water_detector = models.ForeignKey("WaterDetector", verbose_name='Water Detector', on_delete=models.CASCADE, default=1)
     monitoring_procedures = models.TextField(verbose_name='Monitoring Procedures', blank=True)
-
-    class Meta:
-        ordering = ['text']
 
     def __str__(self):
         return self.text
-    
+
+
 class State(models.Model):
     name = models.CharField(max_length=150, verbose_name='State Name')
 
@@ -496,25 +477,26 @@ class State(models.Model):
 
 
 class HeatingCompany(models.Model):
-    name = models.ForeignKey("ContactInfo", on_delete=models.CASCADE, related_name="heating_service_company")
-   #street = models.ForeignKey("Street", on_delete=models.CASCADE,related_name="street_name")
     address = models.ForeignKey("Address", on_delete=models.CASCADE, related_name='heating_service_company_address')
+    material = models.CharField(max_length=200, blank=True)
+    other = models.CharField(max_length=300)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['material']  # Change this to the field you want to order by
 
     def __str__(self):
-        return str(self.name)
-        
-# class Name(models.Model):
-#     name = models.CharField(max_length=100, unique=True)
+        return str(self.material)
 
-#     def __str__(self):
-#         return self.name
+
+class Name(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
     
 class CoolingSystem(models.Model):
     name = models.CharField(max_length=50, verbose_name="Organization Name")
-    location = models.ForeignKey("Locations",on_delete=models.CASCADE, related_name="Places")
     city = models.ForeignKey("City", on_delete=models.CASCADE, related_name="city")
 
     class Meta:
@@ -539,6 +521,12 @@ class DisasterTeam(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.role}'
+    
+class TeamName(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Team Name')
+
+    def __str__(self):
+        return self.name
 
 class TeamResponsibility(models.Model):
     RESPONSIBILITY_CHOICES = [
@@ -560,6 +548,23 @@ class TeamResponsibility(models.Model):
     def __str__(self):
         return f'{self.get_responsibility_display()} - {self.team_member.name}'
     
+class DisasterResponseTeamMember(models.Model):
+    ROLE_CHOICES = [
+        ('Leader', 'Leader'),
+        ('Coordinator', 'Coordinator'),
+        ('Member', 'Member'),
+    ]
+
+    name = models.CharField(max_length=150, verbose_name='Name')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name='Role')
+    contact_phone = models.CharField(max_length=30, verbose_name='Phone')
+    contact_cell_phone = models.CharField(max_length=20, verbose_name='Cell Phone', blank=True)
+    contact_after_hours_phone = models.CharField(max_length=20, verbose_name='After Hours Phone', blank=True)
+    contact_email = models.EmailField(verbose_name='Email', blank=True)
+
+    def __str__(self):
+        return f'{self.name} - {self.role}'
+
 class DataBackup(models.Model):
     DATA_TYPE_CHOICES = [
         ('Collection Records', 'Collection Records'),
@@ -579,14 +584,13 @@ class DataBackup(models.Model):
         return f'{self.type_of_data} - {self.location_of_data}'
 
 
+
 class CommonFields(models.Model):
     staff_person = models.ForeignKey("DisasterResponseTeamMember", on_delete=models.CASCADE, verbose_name='Staff Person')
     outside_organization = models.CharField(max_length=150, verbose_name='Organization', blank=True)
     title_or_contact = models.CharField(max_length=150, verbose_name='Title/Contact', blank=True)
     address1 = models.CharField(max_length=150, verbose_name='Address1', blank=True)
     address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
-    city = models.ForeignKey("City", on_delete=models.CASCADE,related_name="city")
-    state = models.ForeignKey("State",related_name='State', on_delete=models.CASCADE)
     zip_code = models.CharField(max_length=50, verbose_name='Zip', blank=True)
     phone = models.CharField(max_length=15, verbose_name='Phone', blank=True)
     cell_phone = models.CharField(max_length=15, verbose_name='Cell Phone', blank=True)
@@ -597,13 +601,17 @@ class CommonFields(models.Model):
         abstract = True
 
 class DataRestoration(CommonFields):
+    outside_organization = models.CharField(max_length=150, verbose_name='Organization', blank=True)
+
     def __str__(self):
-        return f'{self.staff_person.name} - {self.outside_person_or_organization}'
+        return f'{self.staff_person.name} - {self.outside_organization}'
 
 class Reconfiguration(CommonFields):
+    outside_organization = models.CharField(max_length=150, verbose_name='Organization', blank=True)
+
     def __str__(self):
-        return f'{self.staff_person.name} - {self.outside_person_or_organization}'
-    
+        return f'{self.staff_person.name} - {self.outside_organization}'
+
 class ComputerOperation(models.Model):
     OPERATION_CATEGORIES = [
         ('OR', 'Computer Operation Relocation'),
@@ -614,7 +622,7 @@ class ComputerOperation(models.Model):
 
     category = models.CharField(max_length=3, choices=OPERATION_CATEGORIES, verbose_name='Category')
     procedures = models.TextField(verbose_name='Procedures', blank=True)
-    computer = models.ForeignKey("Computer", related_name="computer", on_delete=models.CASCADE)
+    computer = models.CharField(max_length=150)
     intranet = models.TextField(verbose_name='Intranet', blank=True)
     website = models.TextField(verbose_name='Library Website', blank=True)
     regional_network = models.TextField(verbose_name='Regional Library Network', blank=True)
@@ -639,7 +647,6 @@ class AdministrativeRecord(models.Model):
 
     priority_ranking = models.IntegerField(choices=PRIORITY_CHOICES, verbose_name='Priority Ranking')
     record_type = models.CharField(max_length=150, verbose_name='Type of Record Group')
-    location = models.ForeignKey("Location", on_delete=models.CASCADE, related_name='Location of Records')
 
     class Meta:
         ordering = ['priority_ranking']
@@ -688,9 +695,6 @@ class BuildingPlan(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = 'Building Plans'
-
 
 class InsuranceInformation(models.Model):
     BUILDING = 'Building'
@@ -715,16 +719,15 @@ class InsuranceInformation(models.Model):
 
 
 class InsuranceCompany(models.Model):
-    name = models.ForeignKey("Company", on_delete=models.CASCADE, related_name='Company Name')
     address1 = models.CharField(max_length=150, verbose_name='Address1')
     address2 = models.CharField(max_length=150, verbose_name='Address2', blank=True)
     city = models.ForeignKey("City", on_delete=models.CASCADE, verbose_name='City')
 
     class Meta:
-        ordering = ['name']
+        ordering = ['city']
 
     def __str__(self):
-        return self.name
+        return self.city
     
 class Inventories(models.Model):
     policy_number = models.CharField(max_length=50, verbose_name='Policy Number')
@@ -864,7 +867,6 @@ class DryingSpace(models.Model):
     )
 
     location_type = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name='Location Type')
-    location = models.ForeignKey("locations", verbose_name='Location',on_delete=models.CASCADE )
     space_available = models.CharField(max_length=150, verbose_name='Space Available')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person')
     phone = models.CharField(max_length=20, verbose_name='Phone')
@@ -873,42 +875,44 @@ class DryingSpace(models.Model):
     pager = models.CharField(max_length=15, verbose_name='Pager')
 
     def __str__(self):
-        return f'{self.location_type} - {self.location}'
+        return f'{self.location_type} - {self.space_available}'
+
         
-class Organiztion(models.Model):
+class Organization(models.Model):
     CATEGORIES_CHOICES = [
         ('PD', 'Police Department'),
         ('EM', 'Emergency Management'),
         ('LM', 'Local Emergency Management'),
-        ('ES', 'Egermency Services'), 
+        ('ES', 'Emergency Services'),
     ]
-    emergency_services = models.CharField(max_length=50, choices = CATEGORIES_CHOICES, verbose_name = 'emergency services ')
-    city = models.ManyToManyField("city", related_name="City")
-    state = models.CharField(max_length=50, verbose_name="City")
-    Zip_code = models.ForeignKey("Zip_code", related_name="area_code", on_delete=models.CASCADE)
+    emergency_services = models.CharField(max_length=50, choices=CATEGORIES_CHOICES, verbose_name='Emergency Services')
+    name = models.CharField(max_length=150, verbose_name='Organization Name')
+    state = models.CharField(max_length=50, verbose_name='State')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person within Fire Department')
     phone = models.CharField(max_length=20, verbose_name='Phone')
     cell_phone = models.CharField(max_length=20, verbose_name='Cell Phone')
     fax = models.CharField(max_length=20, verbose_name='Fax')
     website = models.URLField(max_length=300, verbose_name='Website')
 
-    
     class Meta:
-        ordering =['name','city']
+        ordering = ['name', 'state']
+
     def __str__(self):
         return self.name
-        
-class Services(models.Model):
+
+class MaterialsService(models.Model):
     name = models.CharField(max_length=50, verbose_name="Service")
-    backup = models.CharField(max_length=50, verbose_name="backup liason")
+    backup = models.CharField(max_length=50, verbose_name="Backup Liaison")
     date = models.DateField(auto_now=False, auto_now_add=False)
-    review_date = models.DateField(auto_now=False, auto_now_add=False,verbose_name='Date Review of Collection Priorities')
+    review_date = models.DateField(auto_now=False, auto_now_add=False, verbose_name='Date Review of Collection Priorities')
     inspection_date = models.DateField(verbose_name='Date of Last Inspection by Fire Marshal')
     contact_person = models.CharField(max_length=150, verbose_name='Contact Person within Fire Department')
-    
+  
+
     def __str__(self):
-        return f'Emergency Services'
-        
+        return f'{self.name} - {self.organization}'
+
+
 class NonOrganization(models.Model):
     MAINTENANCE_CHOICES = (
         ("maintenance", "Maintenance"),
@@ -932,7 +936,7 @@ class NonOrganization(models.Model):
     def __str__(self):
         return f"Organization {self.id}"
      
-class Organization(models.Model):
+class OrganizationM(models.Model):
     CATEGORIES_CHOICES = [
         ('CE', 'Computer Emergency'),
         ('O', 'Organization'),
@@ -952,17 +956,6 @@ class Organization(models.Model):
         return self.name
   
   
-# class Municipality(models.Model):
-#     state = models.CharField(max_length=50)
-#     city = models.ForeignKey("City",on_delete=models.CASCADE, related_name="city" )
-#     zip_code = models.CharField(max_length=50)
-    
-#     class Meta:
-#         unique_together = ['city', 'state']
-#         ordering = ['city']
-
-#     def __str__(self):
-#         return f'{self.city}, {self.state}'
 
 
 
