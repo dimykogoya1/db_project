@@ -482,7 +482,7 @@ class HeatingCompany(models.Model):
     other = models.CharField(max_length=300)
 
     class Meta:
-        ordering = ['material']  # Change this to the field you want to order by
+        ordering = ['material']  
 
     def __str__(self):
         return str(self.material)
@@ -582,8 +582,6 @@ class DataBackup(models.Model):
 
     def __str__(self):
         return f'{self.type_of_data} - {self.location_of_data}'
-
-
 
 class CommonFields(models.Model):
     staff_person = models.ForeignKey("DisasterResponseTeamMember", on_delete=models.CASCADE, verbose_name='Staff Person')
@@ -955,7 +953,8 @@ class OrganizationM(models.Model):
     def __str__(self):
         return self.name
   
-  
+
+
 
 
 
