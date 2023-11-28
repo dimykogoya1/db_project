@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 #You are still referencing the user model. The 'user-type' you are creating does not need an account to access the system.
 from enum import Enum, auto
-from django.forms import ModelForm
+#from django.forms import ModelForm
 # You are not using Forms yet, at least not under models.
 
 
@@ -20,26 +20,28 @@ class Institution(models.Model):
 class Address(models.Model):
     street=models.CharField(max_length=50, verbose_name="strett Name")
     city=models.ForeignKey("City", on_delete=models.CASCADE, related_name="address") #usually, related name uses the plural of the referenced object.
-    zip_code=models.CharField("zip_code", max_length=10) #CharField has not attribute "zip_code". 
+    zip_code=models.CharField(max_length=10)         #CharField has not attribute "zip_code". 
 
     class Meta:
         ordering =['street', 'zip_code']
     def __str__(self):
         return f"{self.street} {self.city.name}, {self.city.state} {self.zip_code}"
+
       
 class City(models.Model):
     name = models.CharField("City", max_length=100)
-    state = models.DateField("state", default="RI") #Datefield for a two character Varchar/CharField?
+    state = models.CharField(max_length=20, default="RI") #Datefield for a two character Varchar/CharField?
     
     class Meta:
         unique_together = ['name', 'state']
         ordering = ['name']
         
     def __str__(self):
-             return self.name
+        return self.name
        
 class Position(models.Model):
     name = models.CharField(max_length=50,unique=True) #You need to be consistent with your use of spaces. Two between classes, one between definitions. 
+
     class Meta:
         ordering=['name']
         
@@ -54,7 +56,8 @@ class Contact(models.Model):
     email = models.EmailField(blank=True, null=True)
       
     def __str__(self):
-        return self.name # There is no name attribute. Were you trying to do something along the lines of f"{self.first_name} {self.last_name}"
+        #return self.name # There is no name attribute. Were you trying to do something along the lines of 
+        return f"{self.first_name} {self.last_name}"
     
 class Reporter(models.Model):
     name = models.CharField(max_length=150)
@@ -87,9 +90,14 @@ class Responsibilities(models.Model):
         ('IT', 'Information Technology'),
     )
 
+    name = models.ForeignKey("Responsibility", on_delete=models.CASCADE, related_name="task_responsibility")
     responsibility = models.CharField(max_length=3, choices=TASK_CHOICES)
+
+    class Meta:
+        ordering = ['responsibility', 'name']
+       
     def __str__(self):
-        return self.get_responsibility_display()# get_responsability_display() is a funtion that works under the template (Jinja) not as part of the model.
+        return f"{self.responsibility.name}"   # get_responsability_display() is a funtion that works under the template (Jinja) not as part of the model.
                                                 # Also, you cannot call a function/helper without any reference, there is no attribute get_responsability_display() in the class.
     
 RISK_CHOICES = (
@@ -100,9 +108,8 @@ RISK_CHOICES = (
 )
 class BaseMaterial(models.Model):
     name = models.CharField(max_length=50)
-    risk_level = models.IntegerField(choices=RISK_CHOICES, default=4, verbose_name='Risk Level') #Again, defaults are a bad practice. Also, if you are adding verbose name to one attribute, you should add them to all.
-                                                                                                 #Also, the system automatically converts word_anotherword into Word Anotheword while displaying data through the template.
-
+    risk_level = models.IntegerField(choices=RISK_CHOICES, choices=4, verbose_name='Risk Level')     #Again, defaults are a bad practice. Also, if you are adding verbose name to one attribute, you should add them to all.
+                                                                                                     #Also, the system automatically converts word_anotherword into Word Anotheword while displaying data through the template.
     class Meta:
         abstract = True
 
@@ -110,6 +117,7 @@ class BaseMaterial(models.Model):
         return self.name
     
 class ClimateControlRisk(models.Model):
+    name = models.ForeignKey("Name", on_delete=models.CASCADE, related_name="name")
     heating_system = models.IntegerField(choices=RISK_CHOICES, verbose_name='Heating System')
     cooling_system = models.IntegerField(choices=RISK_CHOICES, verbose_name='Cooling System')
     humidification_system = models.IntegerField(choices=RISK_CHOICES, verbose_name='Humidification System')
@@ -120,8 +128,10 @@ class ClimateControlRisk(models.Model):
     mold_infestation = models.IntegerField(choices=RISK_CHOICES, verbose_name='Mold Infestation')
     collections = models.IntegerField(choices=RISK_CHOICES, verbose_name='Collections in Uncontrolled Areas') #This was a good use of verbose name
 
+    class Meta:
+        ordering = ['name']
     def __str__(self):
-       return f'Climate Control Risk Assessment for {self.user.username}' #This will retunr an error, as the class has not foreign keys, much less one to the User model (which you should not be using like this anyway.)
+       return f'Climate Control Risk Assessment for {self.name}' #This will retunr an error, as the class has not foreign keys, much less one to the User model (which you should not be using like this anyway.)
   
 class RiskLevel(models.TextChoices): # What is the difference between RiskLevel and RISK_CHOICES? (line 125 and line 94)
     MUST_BE_ADDRESSED = '1', 'Must be addressed'
