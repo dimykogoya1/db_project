@@ -48,17 +48,17 @@ class Position(models.Model):
     def __str__(self):
         return self.name
     
+
 class Contact(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="contact") #Plural
-    phone = models.CharField(default='', max_length=30) #Empty defaults are not a good practice
+    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="contacts")
+    phone = models.CharField(max_length=30, blank=True)  
     email = models.EmailField(blank=True, null=True)
       
     def __str__(self):
-        #return self.name # There is no name attribute. Were you trying to do something along the lines of 
         return f"{self.first_name} {self.last_name}"
-    
+   
 class Reporter(models.Model):
     name = models.CharField(max_length=150)
     email = models.EmailField()
@@ -71,12 +71,12 @@ class Responsibilities(models.Model):
         ('GCI', 'Collection Information'),
         ('PSL', 'Preparing a staff list'),
         ('AR', 'Assessing Risk'),
-        ('OCP', 'Opening clossing Procedurse'),
+        ('OCP', 'Opening closing Procedures'),
         ('DSP', 'Determining Salvage Priorities'),
-        ('PMC', 'Preventive Maintenace Check List'),
-        ('IAI', 'Collection Insurance and Acccounting Information'),
-        ('FPP', 'Facilitaiting Information and Preparing Floor Plans'),
-        ('CIE', 'collection Information Local Emergency'),
+        ('PMC', 'Preventive Maintenance Check List'),
+        ('IAI', 'Collection Insurance and Accounting Information'),
+        ('FPP', 'Facilitating Information and Preparing Floor Plans'),
+        ('CIE', 'Collection Information Local Emergency'),
         ('GIS', 'Gathering Internal Supplies'),
         ('DEP', 'Devising Emergency Response and Evacuation Procedures'),
         ('IPC', 'Identifying Potential Command center'),
@@ -90,15 +90,14 @@ class Responsibilities(models.Model):
         ('IT', 'Information Technology'),
     )
 
-    name = models.ForeignKey("Responsibility", on_delete=models.CASCADE, related_name="task_responsibility")
+    name = models.ForeignKey("Responsibility", on_delete=models.CASCADE, related_name="task_responsibilities") 
     responsibility = models.CharField(max_length=3, choices=TASK_CHOICES)
 
     class Meta:
         ordering = ['responsibility', 'name']
-       
+
     def __str__(self):
-        return f"{self.responsibility.name}"   # get_responsability_display() is a funtion that works under the template (Jinja) not as part of the model.
-                                                # Also, you cannot call a function/helper without any reference, there is no attribute get_responsability_display() in the class.
+        return f"{self.get_responsibility_display()}"
     
 RISK_CHOICES = (
     (1, 'Must be addressed'),
@@ -108,7 +107,7 @@ RISK_CHOICES = (
 )
 class BaseMaterial(models.Model):
     name = models.CharField(max_length=50)
-    risk_level = models.IntegerField(choices=RISK_CHOICES, choices=4, verbose_name='Risk Level')     #Again, defaults are a bad practice. Also, if you are adding verbose name to one attribute, you should add them to all.
+    risk_level = models.IntegerField(choices=RISK_CHOICES.choices, verbose_name='Risk Level')     #Again, defaults are a bad practice. Also, if you are adding verbose name to one attribute, you should add them to all.
                                                                                                      #Also, the system automatically converts word_anotherword into Word Anotheword while displaying data through the template.
     class Meta:
         abstract = True
@@ -159,7 +158,7 @@ class RiskAssessmentMixin(models.Model):
         abstract = True
 
     def __str__(self):
-        return f'{self._meta.verbose_name} Risk Assessment for {self.user.username}' #Again, you are referencing a model you are not using.
+        return f'{self._meta.verbose_name} Risk Assessment for {self.name}' #Again, you are referencing a model you are not using.
 
 #While I appreciate the idea of trying to learn more about inheritance and mixins, code between lines 125-151 can be summarized into a single class.
 #class RiskAssesmentBase(models.Model):
@@ -211,7 +210,7 @@ class TaskStatus(Enum):
     DONE = auto(), 'Done'
 
 class BasePMTask(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.ForeignKey("User", on_delete=models.CASCADE)
     task_date = models.DateField()
     other = models.TextField(blank=True, verbose_name='Other Tasks')
 
@@ -308,17 +307,16 @@ class ClosingStaffSchedule(models.Model):
         (7, 'Sunday'),
     ]
 
-    primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_closing_staff') #Again, you should not use the User model for this case scenario. 
-    backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_closing_staff')
-    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, unique=True) #You cannot use unique here, otherwise only one person in the whole system would be assigned to a day.
-
+    primary_staff = models.ForeignKey("Staff", on_delete=models.CASCADE, related_name='primary_closing_staff') #Again, you should not use the User model for this case scenario. 
+    backup_staff = models.ForeignKey("Staff", on_delete=models.CASCADE, related_name='backup_closing_staff')
+    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, auto_now=True) #You cannot use unique here, otherwise only one person in the whole system would be assigned to a day.
+# I use insted Auto_now
     class Meta:
         verbose_name_plural = 'Closing Staff Schedule'
 
-        def __str__(self):
-         return f'Closing Staff Schedule for {self.get_day_of_week_display()}' #Indentation is relevant. Also, you cannot reference the self object without an attribute. That only works as an argument, but
+    def __str__(self):
+        return f'Closing Staff Schedule for {self.get_day_of_week_display()}' #Indentation is relevant. Also, you cannot reference the self object without an attribute. That only works as an argument, but
                                                                                # call self.get_day_of... as there is no such attribute. Also, that helper works only with the template.
-        
 class Question(models.Model):
   CATEGORY_CHOICES = [
       ('OP', 'Operating Procedures'),
@@ -334,8 +332,8 @@ class Question(models.Model):
 class Questionaire(models.Model): 
     institution = models.ForeignKey("Institution", on_delete=models.CASCADE, related_name="questionnaires")
     question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="questionnaires") 
-    primary = models.CharField(max_length=50, verbose_name="Primary Contact") # Aren't you suppose to reference a model here? Not the User model, but something like Associate or Worker
-    backup = models.CharField(max_length=50, verbose_name="Backup Contact") #Same as above.
+    primary = models.CharField(max_length=50, verbose_name="Worker") # Aren't you suppose to reference a model here? Not the User model, but something like Associate or Worker
+    backup = models.CharField(max_length=50, verbose_name="Associate") #Same as above.
 
     def __str__(self):
         return self.question.text #Are you sure that's what you want displayed as the representation of the object?
@@ -343,13 +341,14 @@ class Questionaire(models.Model):
 class Tasks(models.Model):
     institution_name = models.ForeignKey("Institution", verbose_name="Institution Name", on_delete=models.CASCADE, related_name="tasks")
     question = models.ForeignKey("Question", on_delete=models.CASCADE, related_name="tasks")
-    answer = models.BooleanField() #Are these true/false questions?
-    items = models.ForeignKey(User, on_delete=models.CASCADE, related_name='operating_procedures', null=True, blank=True) #Users as items? 
+    answer = models.BooleanField(auto_now=True) #Are these true/false questions?
+    items = models.ForeignKey("Items", on_delete=models.CASCADE, related_name='operating_procedures', null=True, blank=True) #Users as items? 
 
     def __str__(self):
-        return str(self.institution_name) #While possible, this looks like an illegal operation that might bring problems. 
+        #return str(self.institution_name) #While possible, this looks like an illegal operation that might bring problems. 
+        return f"{self.institution_name},{self.items},{self.question}"
 
-  
+
 class WeeklyOpening(models.Model):
     DAYS_OF_WEEK = [
         (1, 'Monday'),
@@ -361,21 +360,22 @@ class WeeklyOpening(models.Model):
         (7, 'Sunday'),
     ]
 
-    primary_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='primary_opening_staff', null=True, blank=True)
-    backup_staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backup_opening_staff', null=True, blank=True)
-    day_of_week = models.PositiveIntegerField(choices=DAYS_OF_WEEK, unique=True) #Since you already had a days of the week Choices, why the duplicate? Also, it cannot be unique. Reference the previous usage for more details.
+    primary_staff = models.ForeignKey("User", on_delete=models.CASCADE, related_name='primary_opening_staff', null=True, blank=True)
+    backup_staff = models.ForeignKey("User", on_delete=models.CASCADE, related_name='backup_opening_staff', null=True, blank=True)
+    day_of_week = models.ForeignKey("Days of Weeks", on_delete=models.CASCADE, related_name="days_of_weeks") #Since you already had a days of the week Choices, why the duplicate? Also, it cannot be unique. Reference the previous usage for more details.
 
     class Meta:
         verbose_name_plural = 'Weekly Opening Staff Schedules'
 
-        def __str__(self):
-            return f'Weekly Opening Staff Schedule for {self.get_day_of_week_display()}' #Again, this is not how the display helper works. Also, this is a function of class Meta, not the WeeklyOpening class. Indentation matters.
-class FacilitiesInfo(models.Model): # Don't you already have an address model for this? 
-    street = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=50)
-
     def __str__(self):
-        return f"{self.name}"
+       return f'Weekly Opening Staff Schedule for {self.day_name}'#Again, this is not how the display helper works. Also, this is a function of class Meta, not the WeeklyOpening class. Indentation matters.
+    
+# class FacilitiesInfo(models.Model): # Don't you already have an address model for this? 
+#     street = models.CharField(max_length=50)
+#     zip_code = models.CharField(max_length=50)
+
+#     def __str__(self):
+#         return f"{self.name}"
 
 class EmergencyShutOff(models.Model):
     facility_info = models.ForeignKey("FacilitiesInfo", on_delete=models.CASCADE, related_name='emergency_shut_offs')
@@ -388,9 +388,6 @@ class EmergencyShutOff(models.Model):
     def __str__(self):
         return f'Emergency Shut-Off for {self.shut_off_type}'
 
-
-
-
 class FireExtinguisherType(models.TextChoices):
     ABC = 'ABC', 'ABC'
     WATER = 'Water', 'Water'
@@ -399,7 +396,7 @@ class FireExtinguisherType(models.TextChoices):
 
 class FireDetection(models.Model):
     fire_alarm_pull_box_number = models.CharField(max_length=255, verbose_name='Fire Alarm Pull Box Number/Name')
-    fire_alarm_box_location = models.TextField(verbose_name='Location Description') #How about using a reference to the next model? 
+    fire_alarm_box_location = models.TextField(verbose_name='Location') #How about using a reference to the next model? 
 
     fire_extinguisher_type = models.CharField(
         max_length=200,
@@ -423,8 +420,9 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-class Companies(models.Model): #I would make the name of the class singular, and then add in class Meta the plural option. 
+class Company(models.Model): #I would make the name of the class singular, and then add in class Meta the plural option. 
     # Do comapnies need a name?
+    name = models.ForeignKey("Company", on_delete=models.CASCADE, related_name="Companies")
     heat_detectors = models.CharField(max_length=50)
     smoke_detectors = models.CharField(max_length=50)
     sprinklers = models.CharField(max_length=50, verbose_name='Sprinklers System')
@@ -434,7 +432,7 @@ class Companies(models.Model): #I would make the name of the class singular, and
         ordering = ['location']
 
     def __str__(self):
-        return str(self.location)  # Are you sure you want to reference companies by location?
+        return str(self.name)  # Are you sure you want to reference companies by location?
 
 class ServiceType(models.Model):
     date_created = models.DateField()
