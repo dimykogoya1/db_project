@@ -46,6 +46,12 @@ def extract_elements_from_html(file_path):
         data['code'] = root.xpath('//input[@name="institutioncode"]/@value')[0]
         data['municipality'] = extract_select_element(root)
         data['zip_code'] = root.xpath('//input[@name="institutionzip"]/@value')[0]
+        data['name'] = root.xpath('//input[@id="contactfirstname"]/@value')[0]
+        data['name'] = root.xpath('//input[@id="contactperson"]/@value')[0]
+        data['telephone'] = root.xpath('//input[@id="contacttelephone"]/@value')[0]
+        data['email'] = root.xpath('//input[@id="contactemail"]/@value')[0]
+        
+        
         #data['state'] = root.xpath('//input[@name="institutionstate"]/@value')[0]
 
         return data
@@ -69,9 +75,23 @@ def main():
         #institution_data['city'] = extract_select_element(file_path)
         institution_data_list.append(institution_data)
 
-    for data in institution_data_list:
-        print(data)
+    return institution_data_list
+
+    # for data in institution_data_list:
+    #     print ()
+
+# if __name__ == "__main__":
+#    data_list= main()
+#    for data in data_list:
+#      print(data)
 
 
 if __name__ == "__main__":
-    main()
+    data_list = main()
+    for data in data_list:
+        print(data)
+    
+    if data_list:
+        returned_data = data_list[0]
+        print("Returned data:", returned_data)
+    
