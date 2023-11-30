@@ -7,8 +7,11 @@ for doc in dataset():
     address = Address.objects.get_or_create(street=doc['address'], city=city, zip_code=doc['zip_code'])[0]
     library = Institution.objects.get_or_create(name=doc['institution'], code=doc['code'], address=address)
     staff = Staff.objects.get_or_create(
-      name=f"{doc['first_name']} {doc['last_name']}{doc['contact']}{doc['email']}"
-    )
+      name=f"{doc['first_name']} {doc['last_name']}",
+      position=doc['contact'],
+      email=doc['email'],
+      telephone=doc['telephone']
+            )[0]
 
 
 

@@ -46,10 +46,11 @@ def extract_elements_from_html(file_path):
         data['code'] = root.xpath('//input[@name="institutioncode"]/@value')[0]
         data['municipality'] = extract_select_element(root)
         data['zip_code'] = root.xpath('//input[@name="institutionzip"]/@value')[0]
-        data['name'] = root.xpath('//input[@id="contactfirstname"]/@value')[0]
-        data['name'] = root.xpath('//input[@id="contactperson"]/@value')[0]
-        data['telephone'] = root.xpath('//input[@id="contacttelephone"]/@value')[0]
+        data['first_name'] = root.xpath('//input[@id="contactfirstname"]/@value')[0]
+        data['last_name'] = root.xpath('//input[@id="contactlastname"]/@value')[0]
+        data['telephone'] = root.xpath('//input[@id="contactphone"]/@value')[0]
         data['email'] = root.xpath('//input[@id="contactemail"]/@value')[0]
+        data['contact'] = root.xpath('//input[@name="contacttitle"]/@value')[0]
         
         
         #data['state'] = root.xpath('//input[@name="institutionstate"]/@value')[0]

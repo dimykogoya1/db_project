@@ -431,7 +431,7 @@ class Location(models.Model):
         return self.name
     
 class Staff(models.Model):
-    name=models.ForeignKey("Staff", on_delete=models.CASCADE, related_name="staff")
+    name=models.CharField(max_length=100)
     position = models.CharField(max_length=15)
     email=models.EmailField(max_length=20)
     phone= models.CharField(max_length=20)
